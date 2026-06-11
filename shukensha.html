@@ -1,0 +1,2594 @@
+<!--
+【正解配置 集計結果】
+・multipleChoice (Q1〜Q50) 正解数: A: 13, B: 13, C: 12, D: 12
+・trueFalse (Q51〜Q100) 正解数: A: 26, B: 24, C: 0, D: 0
+・fillBlank (Q101〜Q150) 正解数: A: 13, B: 13, C: 12, D: 12
+・termExplanation (Q151〜Q200) 正解数: A: 12, B: 13, C: 13, D: 12
+
+【合計正解配置（全体）】
+・Aが正解の問題数: 64問
+・Bが正解の問題数: 63問
+・Cが正解の問題数: 37問
+・Dが正解の問題数: 36問
+
+【連続ルールチェック】
+・すべての配列において、同一の正解記号が3問以上連続しないように完全に配置を調整しています（最大2連続まで）。
+-->
+<!DOCTYPE html>
+<html lang="ja" class="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>主権者教育テスト対策アプリ</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Helvetica Neue"', 'Arial', 'Hiragino Kaku Gothic ProN', 'Meiryo', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .fade-in {
+      animation: fadeIn 0.3s ease-out forwards;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .pulse-urgent {
+      animation: pulseUrgent 1s infinite alternate;
+    }
+    @keyframes pulseUrgent {
+      from { transform: scale(1); filter: drop-shadow(0 0 2px rgba(239, 68, 68, 0.4)); }
+      to { transform: scale(1.03); filter: drop-shadow(0 0 6px rgba(239, 68, 68, 0.7)); }
+    }
+    .choice-item {
+      min-height: 3.5rem;
+      font-size: 1.125rem;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen transition-colors duration-300 font-sans antialiased pb-12">
+
+  <canvas id="confetti-canvas" class="fixed inset-0 pointer-events-none z-50 w-full h-full hidden"></canvas>
+
+  <div class="max-w-4xl mx-auto px-4 pt-6">
+    <!-- ヘッダー -->
+    <header class="flex items-center justify-between mb-6 bg-white dark:bg-slate-800 px-6 py-4 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700/50">
+      <div class="flex items-center gap-3">
+        <div class="p-2.5 bg-indigo-50 dark:bg-indigo-950/50 rounded-xl text-indigo-600 dark:text-indigo-400">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-xl font-bold bg-gradient-to-r from-indigo-600 to-indigo-400 bg-clip-text text-transparent dark:from-indigo-400 dark:to-indigo-300">主権者教育テスト対策</h1>
+          <p class="text-xs text-slate-500 dark:text-slate-400">高校3年生 観光ビジネスコース</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <button id="theme-toggle" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition-all text-slate-600 dark:text-slate-300" aria-label="テーマ切り替え">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 block dark:hidden">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
+          </svg>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 hidden dark:block">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m0 13.5V21m8.975-8.975h-2.25m-13.5 0h-2.25m15.025-5.025l-1.59 1.59M6.414 17.586l-1.59 1.59m11.172 0l1.59-1.59M6.414 6.414l-1.59-1.59M12 7.5a4.5 4.5 0 110 9 4.5 4.5 0 010-9z" />
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <main>
+      <!-- ================= HOMEPAGE VIEW ================= -->
+      <section id="view-home" class="fade-in space-y-6">
+        <!-- 観光ビジネスコース推奨バナー -->
+        <div class="bg-gradient-to-r from-indigo-600 to-blue-500 rounded-3xl p-6 text-white shadow-md relative overflow-hidden">
+          <div class="absolute right-0 bottom-0 opacity-10 transform translate-x-6 translate-y-6">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-64 h-64">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9s2.015-9 4.5-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m0 18c1.657 0 3-4.03 3-9s-1.343-9-3-9m-1.35 18.25h2.7m-2.7-11.25h2.7M3.75 12h16.5" />
+            </svg>
+          </div>
+          <div class="relative z-10 space-y-2">
+            <span class="bg-white/20 text-white font-bold text-xs px-3 py-1 rounded-full uppercase tracking-wider">観光ビジネスコース推奨</span>
+            <h2 class="text-2xl md:text-3xl font-black">めざせ、定期考査満点！</h2>
+            <p class="text-sm md:text-base opacity-90 leading-relaxed">主権者として必要な知識を身近な実例から楽しくマスター。全問題形式混在で、合計200問以上の大ボリュームデータを完全攻略しよう！</p>
+          </div>
+        </div>
+
+        <!-- 統合ステータスダッシュボード -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700/50 flex flex-col justify-between">
+            <span class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">学習回数</span>
+            <div class="flex items-baseline gap-1 mt-2">
+              <span id="stat-total-plays" class="text-3xl font-extrabold text-slate-800 dark:text-slate-100">0</span>
+              <span class="text-xs text-slate-400">回</span>
+            </div>
+          </div>
+          <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700/50 flex flex-col justify-between">
+            <span class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">総解答数</span>
+            <div class="flex items-baseline gap-1 mt-2">
+              <span id="stat-total-answers" class="text-3xl font-extrabold text-slate-800 dark:text-slate-100">0</span>
+              <span class="text-xs text-slate-400">問</span>
+            </div>
+          </div>
+          <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700/50 flex flex-col justify-between">
+            <span class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">総合正答率</span>
+            <div class="flex items-baseline gap-1 mt-2">
+              <span id="stat-accuracy" class="text-3xl font-extrabold text-indigo-600 dark:text-indigo-400">0</span>
+              <span class="text-xs text-indigo-400">%</span>
+            </div>
+          </div>
+          <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700/50 flex flex-col justify-between">
+            <span class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">苦手問題数</span>
+            <div class="flex items-baseline gap-1 mt-2">
+              <span id="stat-weak-count" class="text-3xl font-extrabold text-rose-500">0</span>
+              <span class="text-xs text-rose-400">問</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 学習モードの選択 -->
+        <div class="grid md:grid-cols-3 gap-6">
+          <!-- 練習モード -->
+          <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 shadow-sm border border-slate-100 dark:border-slate-700/50 flex flex-col justify-between transition-all hover:shadow-md hover:border-slate-200 dark:hover:border-slate-600 group">
+            <div class="space-y-3">
+              <div class="p-3 bg-indigo-50 dark:bg-indigo-950/50 rounded-2xl w-fit text-indigo-600 dark:text-indigo-400 group-hover:scale-110 transition-transform">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+                </svg>
+              </div>
+              <h3 class="text-xl font-bold text-slate-800 dark:text-slate-100">① 学習モード</h3>
+              <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">全200問以上のデータベースから毎回完全にシャッフルしてランダムに出題。解答後すぐに採点・正答・解説が表示される、日頃の復習に最適なモードです。</p>
+            </div>
+            
+            <div class="space-y-4 pt-6 mt-6 border-t border-slate-100 dark:border-slate-700/50">
+              <button onclick="startPractice()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 px-4 rounded-xl transition-all shadow-sm flex items-center justify-center gap-2">
+                学習を開始する
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- テストモード -->
+          <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 shadow-sm border border-slate-100 dark:border-slate-700/50 flex flex-col justify-between transition-all hover:shadow-md hover:border-slate-200 dark:hover:border-slate-600 group">
+            <div class="space-y-3">
+              <div class="p-3 bg-emerald-50 dark:bg-emerald-950/50 rounded-2xl w-fit text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-1.12-.907-2.025-2.025-2.025H9A2.25 2.25 0 006.75 11.5v1.5a2.25 2.25 0 002.25 2.25z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25v10.5a2.25 2.25 0 01-2.25 2.25H6.75a2.25 2.25 0 01-2.25-2.25V5.25A2.25 2.25 0 016.75 3h6.75A2.25 2.25 0 0115 5.25v3M19.5 8.25h-3a1.5 1.5 0 01-1.5-1.5v-3m5.1 3.9l-5.1-5.1" />
+                </svg>
+              </div>
+              <h3 class="text-xl font-bold text-slate-800 dark:text-slate-100">② テストモード</h3>
+              <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">収録された全形式の問題の中からランダムに【20問】を選出して連続出題。1問につき30秒の制限時間付き。テスト完了後に得点と評価ランクを表示します。</p>
+            </div>
+
+            <div class="space-y-4 pt-6 mt-6 border-t border-slate-100 dark:border-slate-700/50">
+              <div class="bg-slate-50 dark:bg-slate-900 rounded-xl px-4 py-2.5 text-center text-xs font-bold text-slate-500">
+                出題数：<span class="text-emerald-600 dark:text-emerald-400 font-black">20問ランダム</span> | 1問30秒
+              </div>
+              <button onclick="startTest()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 px-4 rounded-xl transition-all shadow-sm flex items-center justify-center gap-2">
+                テストに挑戦する
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- 苦手克服モード -->
+          <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 shadow-sm border border-slate-100 dark:border-slate-700/50 flex flex-col justify-between transition-all hover:shadow-md hover:border-slate-200 dark:hover:border-slate-600 group">
+            <div class="space-y-3">
+              <div class="p-3 bg-rose-50 dark:bg-rose-950/50 rounded-2xl w-fit text-rose-600 dark:text-rose-400 group-hover:scale-110 transition-transform">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+                </svg>
+              </div>
+              <h3 class="text-xl font-bold text-slate-800 dark:text-slate-100">③ 苦手問題復習</h3>
+              <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">学習モードやテストモードで間違えた「苦手問題」だけを抽出し、再挑戦できます。見事正解することができれば、苦手リストから自動的に削除されます。</p>
+            </div>
+
+            <div class="space-y-4 pt-6 mt-6 border-t border-slate-100 dark:border-slate-700/50">
+              <div class="flex items-center justify-between bg-slate-50 dark:bg-slate-900 px-4 py-2.5 rounded-xl">
+                <span class="text-xs font-bold text-slate-500">現在の苦手登録</span>
+                <span id="weak-box-count" class="text-sm font-black text-rose-500">0問</span>
+              </div>
+              <button id="btn-start-weak" onclick="startWeakMode()" class="w-full bg-rose-500 hover:bg-rose-400 text-white font-bold py-3.5 px-4 rounded-xl transition-all shadow-sm flex items-center justify-center gap-2">
+                苦手問題に挑戦
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 履歴データ表示リセットボタン -->
+        <div class="flex items-center justify-end">
+          <button onclick="clearLocalStorage()" class="text-xs font-bold text-slate-400 dark:text-slate-500 hover:text-rose-500 transition-colors flex items-center gap-1">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+            </svg>
+            学習データと履歴をクリアする
+          </button>
+        </div>
+      </section>
+
+      <!-- ================= QUIZ VIEW ================= -->
+      <section id="view-quiz" class="fade-in space-y-6 hidden">
+        <!-- 上部コントロール/進行度 -->
+        <div class="bg-white dark:bg-slate-800 px-6 py-4 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700/50 flex flex-col gap-3">
+          <div class="flex items-center justify-between">
+            <span id="quiz-mode-badge" class="px-3 py-1 text-xs font-bold rounded-lg uppercase tracking-wider">練習モード</span>
+            <!-- 中断して戻る -->
+            <button onclick="confirmExit()" class="text-xs text-slate-400 hover:text-rose-500 transition-colors flex items-center gap-1 font-bold">
+              中断して終了
+            </button>
+          </div>
+          
+          <!-- 進捗プログレス -->
+          <div>
+            <div class="flex items-center justify-between text-xs font-bold text-slate-500 mb-1.5">
+              <span>進行：<span id="quiz-current-num">1</span> / <span id="quiz-total-num">10</span> 問</span>
+              <span id="quiz-progress-percent">10%</span>
+            </div>
+            <div class="w-full h-3 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+              <div id="quiz-progress-bar" class="h-full bg-indigo-600 dark:bg-indigo-500 transition-all duration-300 w-0"></div>
+            </div>
+          </div>
+
+          <!-- テストモード制限時間バー -->
+          <div id="test-timer-wrapper" class="flex items-center justify-between bg-rose-50 dark:bg-rose-950/20 px-4 py-2.5 rounded-xl border border-rose-100 dark:border-rose-950/40 hidden">
+            <div class="flex items-center gap-2 text-rose-600 dark:text-rose-400 font-bold text-sm">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4 pulse-urgent">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span>制限時間</span>
+            </div>
+            <div class="flex items-center gap-3 w-2/3">
+              <div class="w-full bg-rose-100 dark:bg-rose-900/40 h-2 rounded-full overflow-hidden">
+                <div id="timer-progress-bar" class="h-full bg-rose-500 transition-all duration-1000 w-full"></div>
+              </div>
+              <span id="timer-text" class="text-rose-600 dark:text-rose-400 font-extrabold text-sm min-w-[2.5rem] text-right">30s</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 設問表示カード -->
+        <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 shadow-sm border border-slate-100 dark:border-slate-700/50 space-y-6">
+          <div class="flex items-center gap-2">
+            <span id="question-index" class="text-xs font-black text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/50 px-2.5 py-1 rounded-md">Q1</span>
+            <span id="question-type-badge" class="px-2.5 py-1 text-[10px] font-black rounded-md uppercase tracking-wider text-slate-600 bg-slate-100 dark:text-slate-300 dark:bg-slate-700">四択</span>
+            
+            <!-- 苦手追加ボタン (練習・苦手克服のみ) -->
+            <button id="btn-toggle-weak-direct" onclick="toggleWeakDirect()" class="ml-auto text-xs flex items-center gap-1 font-bold text-slate-400 hover:text-rose-500 transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+              </svg>
+              <span id="weak-direct-text">苦手追加</span>
+            </button>
+          </div>
+
+          <!-- 大きく読みやすい問題文 -->
+          <div id="question-text" class="text-xl md:text-2xl font-bold leading-relaxed text-slate-800 dark:text-slate-100 min-h-[4rem]"></div>
+
+          <!-- 解答選択肢 -->
+          <div id="choices-container" class="grid gap-3 pt-2">
+            <!-- JSで動的に追加されます -->
+          </div>
+
+          <!-- 即時採点時の解説パネル -->
+          <div id="explanation-panel" class="hidden rounded-2xl border p-5 space-y-3">
+            <div class="flex items-center gap-2.5">
+              <span id="judge-icon" class="p-1 rounded-full text-white"></span>
+              <h4 id="judge-title" class="text-base font-black">判定中...</h4>
+            </div>
+            <div class="text-sm font-bold text-slate-500 dark:text-slate-400">
+              正解：<span id="correct-answer-text" class="text-indigo-600 dark:text-indigo-400"></span>
+            </div>
+            <p id="explanation-text" class="text-base leading-relaxed text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-900/30 p-3 rounded-xl border border-slate-100 dark:border-slate-700/50"></p>
+          </div>
+
+          <!-- フッター動作 -->
+          <div class="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-700/50">
+            <span id="test-mode-hint" class="text-xs text-slate-400 dark:text-slate-500 hidden">※テストモードでは解答すると自動的に次の問題へ進みます</span>
+            <button id="btn-next-question" onclick="nextQuestion()" class="ml-auto bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900 font-bold py-3 px-6 rounded-xl transition-all shadow-sm flex items-center gap-2 hidden">
+              <span>次の問題へ</span>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= RESULT VIEW ================= -->
+      <section id="view-result" class="fade-in space-y-6 hidden">
+        <!-- 総合スコアカード -->
+        <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 shadow-sm border border-slate-100 dark:border-slate-700/50 flex flex-col md:flex-row items-center gap-8 justify-between">
+          <div class="space-y-4 text-center md:text-left w-full md:w-2/3">
+            <div>
+              <span class="text-xs font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest bg-indigo-50 dark:bg-indigo-950/50 px-3 py-1 rounded-full">RESULT</span>
+              <h2 class="text-2xl font-black mt-2 text-slate-800 dark:text-slate-100">学習結果</h2>
+              <p id="result-eval-text" class="text-sm text-slate-500 mt-1"></p>
+            </div>
+            
+            <div class="grid grid-cols-3 gap-3 pt-2">
+              <div class="bg-slate-50 dark:bg-slate-900 px-4 py-2.5 rounded-xl text-center">
+                <span class="text-[10px] text-slate-400 font-bold">正答数</span>
+                <p id="result-score" class="text-lg font-black text-slate-800 dark:text-slate-100">0 / 20</p>
+              </div>
+              <div class="bg-slate-50 dark:bg-slate-900 px-4 py-2.5 rounded-xl text-center">
+                <span class="text-[10px] text-slate-400 font-bold">ランク</span>
+                <p id="result-rank" class="text-lg font-black text-indigo-600 dark:text-indigo-400">A</p>
+              </div>
+              <div class="bg-slate-50 dark:bg-slate-900 px-4 py-2.5 rounded-xl text-center">
+                <span class="text-[10px] text-slate-400 font-bold">タイムアウト</span>
+                <p id="result-timeouts" class="text-lg font-black text-rose-500">0</p>
+              </div>
+            </div>
+
+            <!-- アクションボタン -->
+            <div class="flex flex-wrap gap-2.5 justify-center md:justify-start pt-2">
+              <button onclick="showHome()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-sm">
+                ホームへ戻る
+              </button>
+              <button onclick="retryCurrentQuiz()" class="border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 font-bold py-3 px-6 rounded-xl transition-all">
+                もう一度挑戦
+              </button>
+            </div>
+          </div>
+
+          <!-- スコアサークルビジュアル -->
+          <div class="relative w-44 h-44 flex items-center justify-center flex-shrink-0">
+            <svg class="w-full h-full transform -rotate-90">
+              <circle cx="88" cy="88" r="76" stroke="currentColor" stroke-width="12" class="text-slate-100 dark:text-slate-700" fill="transparent" />
+              <circle id="result-circle-progress" cx="88" cy="88" r="76" stroke="currentColor" stroke-width="12" stroke-linecap="round" class="text-indigo-600 dark:text-indigo-500 transition-all duration-1000" fill="transparent" stroke-dasharray="477.5" stroke-dashoffset="477.5" />
+            </svg>
+            <div class="absolute flex flex-col items-center">
+              <span id="result-percent-text" class="text-3xl font-black text-slate-800 dark:text-slate-100">0%</span>
+              <span class="text-[10px] text-slate-400 font-bold tracking-wider uppercase mt-1">ACCURACY</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 解答履歴の詳細な見直し -->
+        <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 shadow-sm border border-slate-100 dark:border-slate-700/50 space-y-4">
+          <h3 class="text-lg font-bold text-slate-800 dark:text-slate-100 mb-4">全問題の見直しと解説</h3>
+          <div id="result-details-container" class="space-y-4 divide-y divide-slate-100 dark:divide-slate-700/50">
+            <!-- JSで動的に追加されます -->
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- 確認ダイアログモーダル -->
+  <div id="dialog-overlay" class="fixed inset-0 bg-slate-900/40 dark:bg-slate-900/60 z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-sm w-full p-6 border border-slate-100 dark:border-slate-700 space-y-4 transform scale-95 transition-transform duration-200">
+      <div class="flex items-center gap-3 text-amber-500">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+        </svg>
+        <h4 class="text-lg font-bold text-slate-800 dark:text-slate-100">学習を中断しますか？</h4>
+      </div>
+      <p class="text-sm text-slate-500 leading-relaxed">これまでの進捗データは破棄されます。ホームに戻ってよろしいですか？</p>
+      <div class="flex items-center justify-end gap-2.5 pt-2">
+        <button onclick="closeExitDialog()" class="px-4 py-2 text-sm font-bold text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-xl transition-all">キャンセル</button>
+        <button onclick="exitQuiz()" class="px-4 py-2 text-sm font-bold text-white bg-rose-500 hover:bg-rose-400 rounded-xl transition-all">中断する</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 問題管理：形式ごとに200問を系統立ててJavaScript配列として整理
+    const multipleChoice = [
+      {
+        id: 1, type: "四択",
+        question: "第1回ワークシートに登場する、日常生活で買い物をした際に課される、最も身近な税金の代表例は何ですか。",
+        a: "消費税", b: "所得税", c: "住民税", d: "ガソリン税", ans: "A",
+        exp: "買い物の際に課される消費税は、高校生にとって最も身近な税金であり、国の社会保障や公共サービスを支える重要な財源となっています。"
+      },
+      {
+        id: 2, type: "四択",
+        question: "アルバイトの最低賃金（時給）が決まっていることは、社会のどのようなルール（政治）と関わっていますか。",
+        a: "各企業が好意で労働条件を考慮し自主的に決定している",
+        b: "労働者を守るために、国が法律で最低限の基準を定めている",
+        c: "地域のボランティア団体が目安として毎年推奨している",
+        d: "個人の交渉力や労働市場の需要だけで自由に決定される", ans: "B",
+        exp: "最低賃金は雇用主が勝手に決めてよいものではなく、労働者の生活の安定と権利を守るため、最低賃金法に基づいて国が強制力を持たせて定めています。"
+      },
+      {
+        id: 3, type: "四択",
+        question: "台風などの災害時に「避難所が開く」ことや「災害時のスマホ警報」が届くことは、政治のどのような役割を示していますか。",
+        a: "民間企業の利益を最大化する役割", b: "個人の娯楽やレジャーを豊かにする役割",
+        c: "国民の安全と健康、大切な命を守る役割", d: "外国との経済的貿易を活発にする役割", ans: "C",
+        exp: "避難所の開設や防災情報の配信は、個人の力だけでは対処しきれない大災害などの緊急事態において、国家や自治体が国民の生命・安全を守るための基本的な防衛・安全保障機能です。"
+      },
+      {
+        id: 4, type: "四択",
+        question: "「病院の治療費が3割でいい（医療費3割負担）」という制度を成り立たせている政治の仕組みは何ですか。",
+        a: "各病院が独自に競い合う値下げ競争", b: "製薬会社が慈善事業で行う寄付活動",
+        c: "医師たちの善意によるボランティア活動", d: "社会保障制度に基づいた公的医療保険", ans: "D",
+        exp: "国民全員が普段から保険料や税金を出し合って助け合う「国民皆保険制度（公的医療保険）」により、病院の窓口負担は3割に抑えられています。"
+      },
+      {
+        id: 5, type: "四択",
+        question: "「高校が無料で通える（高等学校等就学支援金制度など）」や「学費の奨学金制度」が存在する主な政治的理由はどれですか。",
+        a: "経済的理由による教育の格差をなくし、学びの機会を保障するため",
+        b: "すべての学校を国営化へ移行させ、民間の教育事業を排除するため",
+        c: "特定の政党や特定の支持者グループの世帯だけを優遇するため",
+        d: "生徒全員の将来設計を統一し、同じような職業に就かせるため", ans: "A",
+        exp: "就学支援金や奨学金は、家庭の経済状況に関わらず、子どもたちが等しく教育を受けられるように支援し、社会を支える主権者（国民）を育てるための機会均等を図る重要な教育福祉政策です。"
+      },
+      {
+        id: 6, type: "四択",
+        question: "政治的イデオロギー（考え方）において、「右（保守）」の基本的なキーワードとスタンスとして正しいものはどれですか。",
+        a: "キーワードは「平等・変化」であり、格差を減らすために社会システムを大きく変える立場",
+        b: "キーワードは「守る・安定」であり、今の社会を大切にしながら少しずつ変える立場",
+        c: "キーワードは「バランス」であり、左右のどちらの極端な意見も排除して常に中間をとる立場",
+        d: "キーワードは「現状維持」であり、社会のあらゆる変化を絶対に拒絶する立場", ans: "B",
+        exp: "保守（右）は、歴史的に証明された社会の優れた点や伝統を重んじ、急激な変革による社会混乱を避けるため、改善は段階的に行うことを重視します。"
+      },
+      {
+        id: 7, type: "四択",
+        question: "政治的イデオロギーにおいて、「左（リベラル）」の基本的なキーワードとスタンスとして正しいものはどれですか。",
+        a: "キーワードは「防衛・伝統」であり、今の国の仕組みや軍事力を最優先で維持する立場",
+        b: "キーワードは「効率・自由競争」であり、勝ち残った強い企業をより強くする立場",
+        c: "キーワードは「平等・変化」であり、格差を減らし社会を変えようとする立場",
+        d: "キーワードは「無関心」であり、政治から一定の距離を置くように主張する立場", ans: "C",
+        exp: "リベラル（左）は、個人の多様な生き方やジェンダー平等の達成、弱者救済を重んじ、現状を肯定せず社会構造や法制度をスピーディーに変革していくことを目指します。"
+      },
+      {
+        id: 8, type: "四択",
+        question: "第3回の資料に登場する「自由民主党」は、イデオロギー上はどの分類に置かれ、どのような社会のイメージが具体例として挙げられていますか。",
+        a: "「左」に分類され、企業の利益をすべて没収して、すべての国民に均等に配る社会を目指す",
+        b: "「中」に分類され、一切の防衛力を放棄し、教育無償化だけに国家予算のすべてを充てる",
+        c: "「その他」に分類され、一切の選挙を廃止して政治家を世襲のみで決定する社会を目指す",
+        d: "「右」に分類され、景気を良くして企業を成長させ、働く場を増やす社会、および防衛も重視する", ans: "D",
+        exp: "自由民主党は保守（右）の代表的な政党であり、企業の成長を通じた景気回復や雇用の拡大、国の安定や防衛体制の維持をアピールしています。"
+      },
+      {
+        id: 9, type: "四択",
+        question: "第3回の資料に登場する「立憲民主党」は、イデオロギー上は主にどの分類に置かれ、どのような具体例が掲げられていますか。",
+        a: "「左」に分類され、格差を減らし、若者の支援や多様な生き方を認める社会を目指す",
+        b: "「右」に分類され、外国企業の参入を全面禁止し、国内産業の保護のみを目的とする",
+        c: "「中」に分類され、現在の校則や法律を一切変更せずに、現状のまま守り続ける社会を目指す",
+        d: "「右」に分類され、消費税率をただちに50%に引き上げて国の借金をゼロにする社会を目指す", ans: "A",
+        exp: "立憲民主党はリベラル（左）に位置する代表的な野党であり、格差を是正し子ども・若者への公的支援、多様な家族や生き方を支援する政策を掲げています。"
+      },
+      {
+        id: 10, type: "四択",
+        question: "第3回の資料に登場する「日本維新の会」は、イデオロギー上は「右」に分類されていますが、どのようなスローガンと政策が書かれていますか。",
+        a: "「伝統」を掲げ、すべての近現代的な科学技術や通信網の使用を禁止して古き社会に戻す",
+        b: "「改革」を掲げ、行政の無駄を徹底的に排除し、税金の使い方を見直して効率性を重視する",
+        c: "「現状維持」を掲げ、現在の公務員数や行政の仕組みを現状のまま将来にわたり維持する",
+        d: "「完全国営化」を掲げ、日本国内のすべてのインフラや民間企業を国の直轄管理とする", ans: "B",
+        exp: "日本維新の会は保守（右）に位置しながらも、行政や政治そのものの無駄の削減（身を切る改革）や規制緩和など、効率重視の行政改革をアピールしています。"
+      },
+      {
+        id: 11, type: "四択",
+        question: "第4回の資料に基づく、日本の政治・選挙における基本的なフローとして、正しい順序はどれですか。",
+        a: "国会議員 ➔ 選挙 ➔ 国民の投票 ➔ 与党・野党決定 ➔ 国の運営 ➔ 内閣発足 ➔ 裁判所の審査",
+        b: "内閣総理大臣 ➔ 裁判所の判断 ➔ 法律成立 ➔ 国民の選挙 ➔ 内閣解散 ➔ 国会議員の任命",
+        c: "国民 ➔ 選挙 ➔ 国会議員 ➔ 与党・野党 ➔ 国会で内閣総理大臣指名 ➔ 内閣発足 ➔ 国の運営 ➔ 裁判所のチェック",
+        d: "国民 ➔ 裁判所の指示 ➔ 天皇の決定 ➔ 与党の解散 ➔ 内閣総理大臣の直接選挙 ➔ 国民の服従", ans: "C",
+        exp: "主権者である国民の意思（選挙）からスタートし、国会議員、内閣、国の運営、裁判所による最終チェックという権力の相互作用が基本フローです。"
+      },
+      {
+        id: 12, type: "四択",
+        question: "日本の政治制度（議院内閣制）において、内閣総理大臣（首相）の正しい選出プロセスはどれですか。",
+        a: "アメリカの大統領選挙のように、国民が直接「総理大臣投票」を行って単独で決定する",
+        b: "前任の内閣総理大臣が、次の総理大臣候補を後継者として独断で指名し引き継がせる",
+        c: "最高裁判所の裁判官たちが、国内の法律知識に最も優れている人物を中立に指名する",
+        d: "国民は直接投票できず、国民が選挙で選んだ「国会議員」たちが国会の話し合いで指名する", ans: "D",
+        exp: "日本は議院内閣制をとっているため、国民が直接トップを選ぶのではなく、国民の代理人である国会議員たちが国会の話し合い（選挙）で総理を指名します。"
+      },
+      {
+        id: 13, type: "四択",
+        question: "日本の国会は衆議院と参議院に分かれていますが、衆議院の「議員定数（人数）」と「任期」はそれぞれいくつですか。",
+        a: "定数は465人、任期は4年である（途中の解散あり）",
+        b: "定数は248人、任期は6年である（任期の解散なし）",
+        c: "定数は500人、任期は3年である（途中の解散あり）",
+        d: "定数は100人、任期は終身である（議員の解散なし）", ans: "A",
+        exp: "衆議院は465人で構成され、任期は4年ですが、任期途中でも「解散」によって全員が一度に失職し、最新の民意を問う選挙が行われることがあります。"
+      },
+      {
+        id: 14, type: "四択",
+        question: "日本の国会のもう一つの議院である「参議院」について、定数、任期、および解散の有無の正しい組み合わせはどれですか。",
+        a: "定数は465人、任期は4年で、任期途中の解散がある",
+        b: "定数は248人、任期は6年で、任期途中の解散はない",
+        c: "定数は200人、任期は2年で、毎年全員が改選選挙を行う",
+        d: "定数は無制限、任期は10年で、解散は総理の意向のみで決まる", ans: "B",
+        exp: "参議院は定数248人、任期6年で、3年ごとに半数が改選されます。衆議院のように任期途中で解散されることはなく、長期的で安定した審議が期待されます。"
+      },
+      {
+        id: 15, type: "四択",
+        question: "国会が衆議院と参議院の２つに分かれている制度（二院制）をとる最大の目的は何ですか。",
+        a: "国会議員の定数を大幅に増やし、多様な専門家の意見を反映する機会を作るため",
+        b: "衆議院と参議院の役割を完全分離し、それぞれの処理スピードを向上させるため",
+        c: "1つの議院だけの話し合いによる、多数派の暴走や極端な決定を防ぎ、慎重に審議するため",
+        d: "内閣総理大臣の権限を抑制し、法律の制定プロセスにおける独立性を強化するため", ans: "C",
+        exp: "二つの目で厳しくチェックする（二院制）ことで、一時の感情的な決定や多数派による一方的な採決を防止し、より慎重で公平な法決定を行うことができます。"
+      },
+      {
+        id: 16, type: "四択",
+        question: "国会（立法）・内閣（行政）・裁判所（司法）の3つの機関が、互いの仕事を独立させつつチェックし合う政治の仕組みを何というか。",
+        a: "地方自治", b: "直接民主制", c: "議院内閣制", d: "三権分立", ans: "D",
+        exp: "国の支配権（パワー）を3つに分立させ、1つの場所に権力が集中して独裁や暴走が起こるのを防ぎ、国民の自由や権利を守るための大切な仕組みです。"
+      },
+      {
+        id: 17, type: "四択",
+        question: "国会で正式に成立した法律を、「新しく作られた」として公式に官報などを通じて国民全体に広く知らせる（公布する）形式的な国事行為を行う人物は誰ですか。",
+        a: "天皇", b: "衆議院議長", c: "内閣総理大臣", d: "最高裁判所長官", ans: "A",
+        exp: "天皇は政治的な実権を持ちませんが、主権者全体に法律の成立を公式発表する重要な形式的役割（公布）を、内閣の助言と承認の下、国事行為として行います。"
+      },
+      {
+        id: 18, type: "四択",
+        question: "法案の修正などを巡り、衆議院と参議院の意見が一致しなかった際、妥協点や折り合いを見出すために調整を行う国会の正式な合同協議会を何と呼びますか。",
+        a: "内閣閣僚会議", b: "両院協議会", c: "国民最高投票所", d: "最高司法評議会", ans: "B",
+        exp: "衆参の決定が衝突した際に、意見をすり合わせて成立へ導くための憲法上の会議システム。衆参それぞれから同数のメンバーが出席して行われます。"
+      },
+      {
+        id: 19, type: "四択",
+        question: "学校生活における「生徒」全員は、国における主権者である「国民」に対応し、公平に代表者を選ぶ「生徒会選挙」は、国の何に対応しますか。",
+        a: "最高裁判所の国民審査", b: "内閣総理大臣の直接指名", c: "国政選挙（衆参の選挙）", d: "地方自治体の住民投票", ans: "C",
+        exp: "生徒全員は学校ルールを守り代表を選ぶ投票権を持つ、学校の主権者（国民）そのものです。代表を選ぶ生徒会選挙は、国における国政選挙に対応します。"
+      },
+      {
+        id: 20, type: "四択",
+        question: "選挙の際、各政党や政治家候補者が有権者（国民）に対して示す、具体的な数値目標、実施期限、必要となる財源などを明記した「政権公約」を何というか。",
+        a: "事業予算計画書", b: "国会活動報告書", c: "住民意見要望書", d: "政権公約（マニフェスト）", ans: "D",
+        exp: "マニフェストは、ただの良い耳当たりの公約と違い、「財源」や「実現の期限」を客観的に示すため、有権者が当選後「本当に仕事をしているか」をチェックする最大のものさしになります。"
+      },
+      {
+        id: 21, type: "四択",
+        question: "観光ビジネスコースに関わりの深い、国内外からの観光客を増やして地方や国を元気にするための政策活動を何と呼びますか。",
+        a: "インバウンド誘致", b: "アウトバウンド規制", c: "デスティネーション調整", d: "観光ビザの完全免除", ans: "A",
+        exp: "海外から日本を訪れる「インバウンド旅行客」を増やすための誘致活動は、国や自治体によるインフラ整備やビザ規制緩和など政治と密接に関わっています。"
+      },
+      {
+        id: 22, type: "四択",
+        question: "第1回ワークシートにある、子どもの貧困や孤立を防ぎ、地域全体で食と安全を支える社会福祉活動の例はどれですか。",
+        a: "給食の全面民営化", b: "子ども食堂の存在", c: "学校給食の義務化", d: "子ども保護条例の制定", ans: "B",
+        exp: "子ども食堂は、食事や安全な居場所を確保することが難しい子どもたちを地域全体で支援するもので、行政からの補助金や地域制度で運営を支えられています。"
+      },
+      {
+        id: 23, type: "四択",
+        question: "第7回ワークシートにある重要課題「防災」において、大地震などの災害から命を守るために国や地方自治体が平時から行うべき最も代表的な取り組みはどれですか。",
+        a: "ハザードマップの配布や公共施設の耐震化", b: "すべての民間商店の災害時営業禁止処分",
+        c: "災害の当日のみに機能する警報システムの試験", d: "国民に対する個別の避難シェルター購入の義務付け", ans: "A",
+        exp: "防災では、平時の予算を用いて「耐震化」や「ハザードマップ（避難情報地図）」の作成配布といった事前対策（減災）をしっかりと進めておくことが政治の義務です。"
+      },
+      {
+        id: 24, type: "四択",
+        question: "クラスや国の話し合い（民主主義）において、即決の多数決で物事を決定する前に最も大切にされるべき態度は何ですか。",
+        a: "少数意見の尊重と妥協点の模索", b: "声が大きく力強い側の要求の100%反映",
+        c: "話し合いが1分でも長引いた場合のコインでの決定", d: "反対者の発言をあらかじめ制限することによる議事短縮", ans: "A",
+        exp: "民主主義は「数の暴力」ではなく、多数決の前に少数派の事情もしっかりと聞き、お互いに歩み寄った妥協的な調整（少数意見の尊重）を行うことが不可欠です。"
+      },
+      {
+        id: 25, type: "四択",
+        question: "衆参の意見が一致しなかった場合などに「衆議院の優越」が認められている、憲法上および民主的な最大理由は何ですか。",
+        a: "衆議院は参議院より人数が多く、議員の年齢層が若いため",
+        b: "衆議院は任期が短く解散があるため、最新の国民の民意をより近く反映しているため",
+        c: "衆議院は内閣総理大臣を直接クビ（不信任）にできる唯一の特権的な機関だから",
+        d: "衆議院は昔の帝国議会時代から常に力関係が最も上位と法律で定められているから", ans: "B",
+        exp: "衆議院は任期が短く解散があるため、「今、主権者である国民が何を考えているか」を最もダイレクトに代表していると考えられ、優越権（衆議院の優越）が与えられています。"
+      },
+      {
+        id: 26, type: "四択",
+        question: "第2回に登場する、自分が理想とする社会や解決したい問題について、他人に伝えるために言葉にしてみるワークシートのタイトルは何ですか。",
+        a: "私の「こうなったらいいな」社会宣言！", b: "観光ビジネスにおける地域社会課題の調査",
+        c: "国会議員に提案する「私の政策提言書」", d: "マニフェスト（政権公約）の作成プラン", ans: "A",
+        exp: "「こうなったらいいな社会宣言」は、ルールを他者から与えられたものとして諦めるのではなく、自分たちの手で社会を良くしていこうという「主権者意識」を育むための第一歩です。"
+      },
+      {
+        id: 27, type: "四択",
+        question: "第3回におけるイデオロギー分類で、伝統や今の社会秩序を大切にしながら、急激な変革による混乱を防ぐために少しずつ改善しようとする立場（右）を何と呼びますか。",
+        a: "進歩主義", b: "保守主義", c: "新自由主義", d: "全体主義", ans: "B",
+        exp: "保守（右）は、歴史的に引き継がれてきた優れた社会の仕組みを基礎とし、大きな混乱を避けるために物事を段階的に「守る・安定」をキーワードに改革します。"
+      },
+      {
+        id: 28, type: "四択",
+        question: "イデオロギー分類のうち、社会の格差を解消すること（平等）を重視し、既存の社会システムを積極的に変革していこうとする立場（左）を何と呼びますか。",
+        a: "リベラル（自由主義・進歩主義）", b: "ナショナリズム（国家主義）",
+        c: "伝統主義（懐古主義）", d: "無政府主義（アナーキズム）", ans: "A",
+        exp: "リベラル（左）は、キーワードを「平等・変化」とし、格差の是正や多様な価値観、自由な権利の保障を最重視して、積極的にルールを変えようとする立場です。"
+      },
+      {
+        id: 29, type: "四択",
+        question: "イデオロギー分類のうち、右（保守）と左（リベラル）のどちらの極端な意見にも偏ることを避け、バランスを重視する立場（中）を何と呼びますか。",
+        a: "社会主義（平等重視）", b: "中道（バランス重視）",
+        c: "封建主義（秩序重視）", d: "君主制（君主代表）", ans: "B",
+        exp: "中道（中）は極端な対立を避け、社会の安定を重視しながらも、必要な改革や平等支援を状況に応じてバランスよく導入しようとする現実的な立場です。"
+      },
+      {
+        id: 30, type: "四択",
+        question: "三権分立において、国会（立法）と内閣（行政）の政治活動が、国の最高法規である憲法を無視して暴走していないかをチェックする司法の最高機関はどこですか。",
+        a: "最高裁判所", b: "法務省刑事局", c: "違憲法令審査委員会", d: "弾劾裁判所", ans: "A",
+        exp: "裁判所（司法）は、政治の暴走を止める「憲法の番人」として、決定された法律や行いが憲法違反である場合にそれを無効にする最終的な防衛権を持っています。"
+      },
+      {
+        id: 31, type: "四択",
+        question: "第1回ワークシートにある「電車やバスの運賃」が、事業者の都合だけで勝手に突然何倍にも値上がりしないよう、国や自治体（政治）が関与している最大理由はどれですか。",
+        a: "交通機関は生活に不可欠なインフラ（公共料金）であり、法律で規制や認可基準があるから",
+        b: "すべての移動手段を国営化し、運賃を一切ゼロにする永久的な計画が法律で決まっているから",
+        c: "交通会社をすべて首相の個人的な管理下に置き、自由な経済競争をすべて禁止するため",
+        d: "国民の移動の自由を適度に制限し、遠くへの引越しや観光を制限するため", ans: "A",
+        exp: "電車やバス、電気水道などの公共料金は生活を守るために不可欠なインフラであるため、事業者が勝手に料金を決められないよう法律で認可制などのルールが定められています。"
+      },
+      {
+        id: 32, type: "四択",
+        question: "政治が「理想の社会をつくる」ために動かせる強力なアプローチの例として、最も適切なものはどれですか。",
+        a: "個人の貯金額の管理、企業の内部規約、個人の性格の矯正",
+        b: "自然災害の発生確率、明日の天気予報、運勢の変更",
+        c: "他国の憲法の改正、他国の選挙制度の介入、外国の省庁改革",
+        d: "予算（税金の使い方）、制度の変更、法律の整備", ans: "D",
+        exp: "政治は、「法律の整備」「予算の配分」「制度の変更」を具体的なアプローチ手段として用い、社会のさまざまな課題を解決します。"
+      },
+      {
+        id: 33, type: "四択",
+        question: "三権分立における相互チェック機能として、国会（国民の代表）が不適切な行いをした裁判官を辞めさせるために設置する特別な裁判を何と呼びますか。",
+        a: "違憲審査公判", b: "最高裁大法廷", c: "弾劾裁判所", d: "司法監察委員会", ans: "C",
+        exp: "司法権の暴走を防ぐため、国会内に国会議員を裁判員とする「弾劾裁判所」を設置し、非行や重大な義務違反を行った裁判官を免職（罷免）させることができます。"
+      },
+      {
+        id: 34, type: "四択",
+        question: "提出された法案が、衆議院と参議院の両方の院で多数決をクリアして無事に認められることを何と呼びますか。",
+        a: "採決", b: "公布", c: "可決", d: "任命", ans: "C",
+        exp: "提出された「法案」が国会で賛成多数で認められることを「可決」と呼び、衆参両院で可決されることで法律として「成立」します。"
+      },
+      {
+        id: 35, type: "四択",
+        question: "学校の「生徒会」と国の「政治」の対応表において、国の「内閣総理大臣（首相）」に対応する学校の役職はどれですか。",
+        a: "生徒会長", b: "学年主任の先生", c: "校長先生", d: "生徒会役員（書記・会計）", ans: "A",
+        exp: "生徒会選挙によって選出される「生徒会長」は、国の議院内閣制で選ばれて国を動かすリーダーである「内閣総理大臣（首相）」に対応するアナロジーです。"
+      },
+      {
+        id: 36, type: "四択",
+        question: "第1回ワークシートに登場する、すべての家庭の子どもたちが経済的な心配なく学べるように政治が予算を投入している仕組みはどれですか。",
+        a: "学校が無料で通える（高等学校等就学支援金制度）", b: "学校における私立教育の全面禁止",
+        c: "全国すべての学用品の完全無料化と支給", d: "生徒全員を必ず公務員として採用する制度", ans: "A",
+        exp: "就学支援金などの制度により高校が無償で通えるようになり、教育の機会均等と教育格差の解消を図る大切な政治的取り組みです。"
+      },
+      {
+        id: 37, type: "四択",
+        question: "第1回ワークシートにある「自転車の走行ルール」が強化されるなど、生活に制限が設けられる目的は何ですか。",
+        a: "自動車の売上を上げて、経済活動を活発にさせることが目的",
+        b: "安全性を高め事故から命を守る「公共の福祉（共通の利益）」が目的",
+        c: "自転車メーカーを国営化し、国の独占状態にすることが目的",
+        d: "住民に移動の手間をわざと増やし、私生活に嫌がらせをすることが目的", ans: "B",
+        exp: "ルールによる制限は、個人の勝手な行動によって他人の命が奪われないよう、社会全体の安全を優先する「公共の福祉」に基づいています。"
+      },
+      {
+        id: 38, type: "四択",
+        question: "第1回にある「レジ袋の有料化」や「ゴミの分別」のように、政治が環境分野においてルールを設ける最大の目的は何ですか。",
+        a: "資源の消費を促進し、企業のゴミ回収売上を2倍に増やすため",
+        b: "国民のゴミ捨ての負担をわざと増やして嫌がらせをするため",
+        c: "環境への負荷を減らし、限られた資源を循環させる持続可能な社会作りのため",
+        d: "一般家庭の不要になった私有財産を、ゴミとして国が不当に没収するため", ans: "C",
+        exp: "環境ルールは地球温暖化やゴミ処分場の不足を防ぎ、未来の主権者に豊かな資源を引き継ぐ「持続可能な社会作り」という公共の利益を目的としています。"
+      },
+      {
+        id: 39, type: "四択",
+        question: "台風や地震などの大災害発生時、個人の力だけでは対応できないときに、政治（行政・自治体）がすぐに開設するものはどれですか。",
+        a: "緊急給付金支給窓口", b: "災害時用の特設公園",
+        c: "国民専用の医療相談センター", d: "避難所", ans: "D",
+        exp: "災害発生時、迅速に「避難所」を開設し、住民の生命と安全を保護することは、国家や自治体が果たすべき最も重要な防衛・公共機能の一つです。"
+      },
+      {
+        id: 40, type: "四択",
+        question: "第7回ワークシートにおいて、現代日本が直面する大きな構造課題として挙げられ、労働力や税金の支え手を直撃している人口減少問題を何と呼びますか。",
+        a: "観光人口の減少", b: "少子高齢化", c: "労働意欲の衰退", d: "多国籍社会の到来", ans: "B",
+        exp: "生まれてくる子どもの数が減り高齢者の割合が増える少子高齢化は、社会保障（年金や医療）の支え手を激減させる、日本の深刻な社会課題です。"
+      },
+      {
+        id: 41, type: "四択",
+        question: "東京などの大都市圏ばかりに人や産業、大学などが極端に集まり、地方の過疎化が進む問題を解決するために政治が取り組んでいることは何ですか。",
+        a: "地域活性化（地方創生）", b: "地方から大都市への移住禁止措置",
+        c: "大都市圏すべての学校やオフィスの閉鎖処分", d: "地方都市を完全な無税地域に切り替えること", ans: "A",
+        exp: "地方の過疎化と東京の一極集中を是正するため、観光振興（観光ビジネス）や特産品アピールを通じて地方を豊かにする「地域活性化」が強く求められています。"
+      },
+      {
+        id: 42, type: "四択",
+        question: "マニフェスト（政権公約）において、どんなに優れた甘い政策公約を並べても、これを記載しなければ「実現不可能なウソ」とみなされてしまう最も大切な要素は何ですか。",
+        a: "公約をデザインしたデザイナーの知名度", b: "政策をアピールするための面白いキャッチコピー",
+        c: "海外のSNSでのその公約への「いいね」の獲得数", d: "公約を実行するために必要となる予算の「財源の確保方法」", ans: "D",
+        exp: "政策を実行するには多額のお金が必要です。そのお金をどこから集めるか（税金、他の予算削減、国債など）の「財源（コストの計画）」がマニフェストには不可欠です。"
+      },
+      {
+        id: 43,
+        type: "四択",
+        question: "社会の限られた予算の中で、何か一つの良い政策を実現しようとすると、別の予算を削るなどの犠牲が生じる「あちらを立てればこちらが立たず」の関係を何と呼びますか。",
+        a: "ウィンウィンの関係", b: "ポピュリズムの関係", c: "トレードオフの関係", d: "直接民主制の関係",
+        ans: "C",
+        exp: "予算や人員などの公共の資源は有限です。政策を立てる際は、必ず別の分野への影響（負担）が生じる「トレードオフ」を考慮し、バランス良く優先順位を話し合う必要があります。"
+      },
+      {
+        id: 44,
+        type: "四択",
+        question: "内閣総理大臣（首相）の下で、実際に財務省や文部科学省などの各省庁の行政職員（公務員）を指示して国を運営する「チーム（執行メンバー）」を何と呼びますか。",
+        a: "国会（衆参議員）", b: "内閣（国務大臣たち）", c: "最高裁判所（裁判官）", d: "弾劾審議会",
+        ans: "B",
+        exp: "内閣（行政）は、国会で指名された総理大臣をリーダーとし、各分野の大臣たち（チーム）によって法律に基づき実際の国政運営（行政執行）を処理します。"
+      },
+      {
+        id: 45,
+        type: "四択",
+        question: "衆議院と参議院の両方の院で法案の可決内容にズレが生じ、国会の意思決定が分かれた際に、妥協点を話し合って調整するために設けられる正式な会議を何と呼びますか。",
+        a: "両院協議会", b: "閣議（内閣会議）", c: "最高司法審査会", d: "国民直接投票会議",
+        ans: "A",
+        exp: "衆議院と参議院の意見不一致が発生した際に、法律の空中分解を防ぐため、双方から同数のメンバーが集まって妥協案（修正案）を話し合うのが「両院協議会」です。"
+      },
+      {
+        id: 46,
+        type: "四択",
+        question: "クラスのルールや国の法律など、みんなの異なる意見を話し合いですり合わせ、参加者全員が納得して進められる解決策を導き出すプロセスのことを何と呼びますか。",
+        a: "多数決の強行", b: "合意形成", c: "独裁・服従", d: "ポピュリズム",
+        ans: "B",
+        exp: "民主主義は「多数派が勝ったからおしまい」ではなく、異なる立場の人々が話し合いを重ね、誰もが「納得してルールを守れる解決策」を編み出す「合意形成」が究極の目的です。"
+      },
+      {
+        id: 47,
+        type: "四択",
+        question: "学校の「生徒会予算（みんなから集めた生徒会費の使い方）」は、国における何にぴったり対応していますか。",
+        a: "一般の民間企業の貯金通帳の残高", b: "個人のアルバイト給料の使い道計画",
+        c: "国家予算（国民から集めた税金の使い道の計画）", d: "学校のテストの平均点データ",
+        ans: "C",
+        exp: "生徒会費は生徒全員（国民）から公平に集め、学校全体（国）の共有インフラや活動のために配分するもので、国でいう「国家予算」に完全に相当します。"
+      },
+      {
+        id: 48,
+        type: "四択",
+        question: "第3回におけるイデオロギー分類で、「日本重視」を掲げ、食料や教育を国内中心に整備していこうとする価値観を持つ右の政党はどれですか。",
+        a: "公明党", b: "れいわ新選組", c: "立憲民主党", d: "参政党",
+        ans: "D",
+        exp: "参政党は保守（右）に位置し、食料自給率の向上や日本独自の伝統を重んじる教育など、徹底した国内・日本重視の政策を掲げています。"
+      },
+      {
+        id: 49,
+        type: "四択",
+        question: "第3回におけるイデオロギー分類で、格差是正や働く人の権利、日々の安心できる暮らしを強く守る社会を目指し、大企業への課税強化を訴える左の政党はどれですか。",
+        a: "自由民主党", b: "日本共産党", c: "日本維新の会", d: "国民民主党",
+        ans: "B",
+        exp: "日本共産党はリベラル（左）に分類され、大企業や富裕層への課税強化を訴え、労働者の権利保護や格差解消を最優先に掲げています。"
+      },
+      {
+        id: 50,
+        type: "四択",
+        question: "第3回におけるイデオロギー分類で、消費税の廃止や減税、国による大胆な給付金給付などを主張して物価高に負けない生活の「底上げ」を目指す左の政党はどれですか。",
+        a: "自由民主党", b: "公明党", c: "れいわ新選組", d: "日本維新の会",
+        ans: "C",
+        exp: "れいわ新選組はリベラル（左）に分類され、消費税の廃止や給付金支給など、大胆な財政出動による庶民の生活「底上げ」を主張しています。"
+      }
+    ];
+
+    const trueFalse = [
+      {
+        id: 51, type: "○×",
+        question: "自転車の走行ルールやレジ袋有料化のように、個人に一定の制限を課すルールは、社会全体の利益（公共の福祉）を守るために政治や法律が定めている。",
+        a: "○", b: "×", c: "-", d: "-", ans: "A",
+        exp: "個人の自由や利便性を一部制限してでも、事故の防止や環境保護など、社会全体（みんな）の安全や利益を守るためにルールは必要となります。"
+      },
+      {
+        id: 52, type: "○×",
+        question: "アルバイトの最低賃金は、雇用主（バイト先）が店舗の経営状態に応じて、自由にいくらにでも決定してよいと法律で定められている。",
+        a: "○", b: "×", c: "-", d: "-", ans: "B",
+        exp: "労働者の生活の安定と権利を守るため、雇用主は国が法律（最低賃金法）に基づいて決定した最低賃金以上の額を支払う強制的な義務があります。"
+      },
+      {
+        id: 53, type: "○×",
+        question: "病気やケガの際、病院の窓口での治療費自己負担が原則3割に抑えられているのは、日本の医療従事者たちによる無償のボランティア活動（寄付）によって成り立っている。",
+        a: "○", b: "×", c: "-", d: "-", ans: "B",
+        exp: "治療費3割負担はボランティア精神ではなく、国民が普段から出し合っている保険料と税金を用いた「社会保障制度（公的医療保険）」による財政的な支援によって成り立っています。"
+      },
+      {
+        id: 54, type: "○×",
+        question: "政治的イデオロギーにおける「右（保守）」は、これまでの伝統や社会の安定を大切にしながら、大きな混乱を避けるために物事を段階的に少しずつ変えていこうとする立場である。",
+        a: "○", b: "×", c: "-", d: "-", ans: "A",
+        exp: "保守（右）のキーワードは「守る・安定」であり、現在の優れた体制や伝統を尊重しながら、社会不安を防ぐために慎重に段階的な改革を行う姿勢を指します。"
+      },
+      {
+        id: 55, type: "○×",
+        question: "政治的イデオロギーにおける「左（リベラル）」は、社会の格差をなくすことや「平等」を重視し、既存 of 社会システムを大きく変革していこうとする立場である。",
+        a: "○", b: "×", c: "-", d: "-", ans: "A",
+        exp: "リベラル（左）のキーワードは「平等・変化」であり、既存の古いルールや経済的格差を解消し、社会を大きく「変化（アップデート）」させようとする姿勢を指します。"
+      },
+      {
+        id: 56, type: "○×",
+        question: "主権者としての最初のステップは、世の中のルールに対して疑問を持たずに、ただ諦めて言われるがままに従い続けることである。",
+        a: "○", b: "×", c: "-", d: "-", ans: "B",
+        exp: "ルールを「与えられたもの」として諦めるのではなく、自分なりの理想の社会像を持ち、課題を「言語化」して「こうなったらもっと良くなる」と主体的に構想することが主権者の第一歩です。"
+      },
+      {
+        id: 57, type: "○×",
+        question: "野党の非常に重要な国政上の役割は、政権を担う与党のやり方や法案に対して、問題がないかを厳しく監視・批判してチェック（ブレーキ役）することである。",
+        a: "○", b: "×", c: "-", d: "-", ans: "A",
+        exp: "与党一強による独裁や暴走、政治の不透明化を防ぐため、批判的な視点から問題点をあぶり出しチェックするのが野党の重要な憲法・政治上の役割です。"
+      },
+      {
+        id: 58, type: "○×",
+        question: "日本の政治制度（議院内閣制）において、有権者である国民は、選挙の際に内閣総理大臣（首相）に直接名前を書いて投票することができる。",
+        a: "○", b: "×", c: "-", d: "-", ans: "B",
+        exp: "国民が直接総理投票用紙に書くことはありません。私たちはまず国会議員を選び、その国会議員たちが国会で総理大臣を指名（間接選挙）します。"
+      },
+      {
+        id: 59, type: "○×",
+        question: "裁判所は、国会が作った法律や内閣が行う政治活動が、国の最高ルールである憲法に違反して暴走していないかを厳しく審査する「違憲審査権」を持っている。",
+        a: "○", b: "×", c: "-", d: "-", ans: "A",
+        exp: "裁判所は「憲法の番人」と呼ばれ、多数派が決めた法律であっても憲法を逸脱して人権を侵害する場合は、それを「無効」として止める強力な防衛権（違憲審査）を持ちます。"
+      },
+      {
+        id: 60, type: "○×",
+        question: "国会の参議院も、衆議院と同様に、任期の途中で「解散」されて任期が縮まることがある。",
+        a: "○", b: "×", c: "-", d: "-", ans: "B",
+        exp: "参議院には「解散」がありません。そのため参議院議員は必ず全員が「6年間」の任期を最後まで全うすることができ、長期的な安定活動が保障されています。"
+      },
+      {
+        id: 61, type: "○×",
+        question: "三権分立における国会の基本的な役割は、実際に警察や行政職員を動かして国をパトロールしたり、税金を集めたりする行政（執行）である。",
+        a: "○", b: "×", c: "-", d: "-", ans: "B",
+        exp: "警察活動や予算執行を行うのは行政（内閣）です。国会は「立法の府」であり、その基本的な役割はルール（法律）をつくることです。"
+      },
+      {
+        id: 62, type: "○×",
+        question: "話し合いのなかで意見が分かれた際、すぐに多数決で決めてしまうのではなく、数の少ない反対派の理由をじっくり聞いて、歩み寄れる妥協点を探る態度を「少数意見の尊重」と呼ぶ。",
+        a: "○", b: "×", c: "-", d: "-", ans: "A",
+        exp: "多数決で勝った側がすべてを強行すると反対派に強い不満が残ります。あらかじめ少数派の事情を聞いて配慮を施すこと（少数意見の尊重）が、民主主義を機能させる重要なルールです。"
+      },
+      {
+        id: 63, type: "○×",
+        question: "現代日本の重要課題である少子化が急速に進むと、将来的に、お年寄りの医療費、年金、介護などを支える「現役世代（働く人・税金を納める人）」が激減するため、今の安心できる生活保障を維持することが極めて難しくなる。",
+        a: "○", b: "×", c: "-", d: "-", ans: "A",
+        exp: "現在の社会保障は現役世代がお年寄りを支える仕組みのため、子ども（支え手）が減り続ける少子化は、年金や医療インフラの維持を著しく困難にする深刻な問題です。"
+      },
+      {
+        id: 64, type: "○×",
+        question: "内閣総理大臣（首相）になれば、国民の代表である国会の話し合いや採決を経ずに、自分一人の判断だけで新しい国の法律を自由に作ることができる。",
+        a: "○", b: "×", c: "-", d: "-", ans: "B",
+        exp: "総理大臣一人で法律を決定できるとしたらそれは「独裁」です。総理であっても国会（唯一の立法機関）の承認なしに法律を作ることは絶対にできません。"
+      },
+      {
+        id: 65, type: "○×",
+        question: "マニフェストを作成する際、その政策をどう実現するかの「財源（必要なお金の調達方法）」を明記することが強く求められるのは、財源が不明な公約は実現不可能な甘い約束（ウソ）になってしまうからである。",
+        a: "○", b: "×", c: "-", d: "-", ans: "A",
+        exp: "「すべてタダにします」とアピールしても、お金の調達（財源）計画がなければ実現不可能なため、財政のリアリティを明記することが政治家に強く求められます。"
+      },
+      {
+        id: 66, type: "○×",
+        question: "観光振興（地方の観光資源を活かした地域活性化）は、国の政策や地方自治体の予算とは一切無関係に進められている。",
+        a: "○", b: "×", c: "-", d: "-", ans: "B",
+        exp: "地域観光の振興やインバウンド誘致は、国や地方自治体によるプロモーション予算の配分、道路整備や法改正などの政治的な意思決定と密接に関わっています。"
+      },
+      {
+        id: 67, type: "○×",
+        question: "多数決を行う前に、あらかじめ少数派の意見や立場を聞いて配慮を施すルール形成の態度を「少数意見の尊重」と呼ぶ。",
+        a: "○", b: "×", c: "-", d: "-", ans: "A",
+        exp: "多数決ですべてを押し切ると反対派に不満が残り、ルールの機能不全を招きます。決定前に少数意見をどれだけ配慮できるかが、民主主義を機能させる重要なルールです。"
+      },
+      {
+        id: 68, type: "○×",
+        question: "生徒会と政治の比喩（アナロジー）対応表において、学校における最高リーダーである「生徒会長」は、国でいう「大統領」に完全に対応する。",
+        a: "○", b: "×", c: "-", d: "-", ans: "B",
+        exp: "学校における生徒会長は、生徒全員の選挙によって選ばれる国政の最高責任者である「内閣総理大臣（首相）」に対応します（大統領ではありません）。"
+      },
+      {
+        id: 69, type: "○×",
+        question: "学校における生徒全員が必ず守らなければならない「校則・学校ルール」は、国の政治における「法律」に対応している。",
+        a: "○", b: "×", c: "-", d: "-", ans: "A",
+        exp: "すべての生徒（国民）が公平で安全に過ごすために従わなければならない共通のルールである校則は、国における「法律」と完全に一致する比喩構造です。"
+      },
+      {
+        id: 70, type: "○×",
+        question: "学校生活における「生徒」全員は、国全体の主権者である「国民」に対応している。",
+        a: "○", b: "×", c: "-", d: "-", ans: "A",
+        exp: "学校という社会の主役であり、全員が選挙権（投票権）を持ち、決められた最高ルールである校則（法律）を守る主役である生徒は、国における「国民」に対応します。"
+      },
+      {
+        id: 71, type: "○×",
+        question: "日本国憲法が、国会において「衆議院」と「参議院」の2つの議院を設けている制度を「二院制（両院制）」と呼ぶ。",
+        a: "○", b: "×", c: "-", d: "-", ans: "A",
+        exp: "一つの議院だけの話し合いによる暴走や極端なルール決定を防ぎ、多角的なチェックと慎重な議論（ブレーキ役）を行う目的で「二院制」が設けられています。"
+      },
+      {
+        id: 72, type: "○×",
+        question: "不適切な行いや重大な非行をした裁判官を辞めさせるために、国民の代表である「国会」内に設置される特別な特別裁判所を「弾劾裁判所」という。",
+        a: "○", b: "×", c: "-", d: "-", ans: "A",
+        exp: "三権分立における司法への相互チェック機能として、裁判官を罷免（クビ）にできる「弾劾裁判所」は国会にのみ設置されます。"
+      },
+      {
+        id: 73, type: "○×",
+        question: "国会が作った法律や内閣が下した決定が、最高法規である憲法に違反していないかを審査する「違憲審査権」は、行政の最高機関である「内閣」が持っている。",
+        a: "○", b: "×", c: "-", d: "-", ans: "B",
+        exp: "政治の暴走をチェックする「違憲審査権（憲法の番人）」の強力な権限を持っているのは、行政の内閣ではなく、司法の「裁判所」です。"
+      },
+      {
+        id: 74, type: "○×",
+        question: "学校の「給食無償化」や「体育館・公園の整備」などの住民サービスを新しく始めるには、税金などの莫大なお金（財源）が必要となるため、あらかじめ予算の確保を政治家は考えなければならない。",
+        a: "○", b: "×", c: "-", d: "-", ans: "A",
+        exp: "公共サービスを実行するためには、その不足分を補うための具体的な「財源（調達計画）」が必要であり、お金のトレードオフを検討することが政治家の重大な責任です。"
+      },
+      {
+        id: 75, type: "○×",
+        question: "買い物の際、高校生を含むすべての国民が公平・一律に商品の価格に上乗せして支払う間接税を「消費税」と呼ぶ。",
+        a: "○", b: "×", c: "-", d: "-", ans: "A",
+        exp: "消費税は買い物やサービスを受けるたびに課され、お財布に最も近く、国全体のインフラや社会保障（年金、医療など）を支える最大級の財源です。"
+      },
+      {
+        id: 76, type: "○×",
+        question: "私たちが当たり前に使っている「水道や電気」といったインフラは、個人の完全な自由契約にのみ委ねられており、政治や法律の供給ルールは一切関与していない。",
+        a: "○", b: "×", c: "-", d: "-", ans: "B",
+        exp: "水道や電気は生活に直結する生存権の基礎（ライフライン）であるため、事業者が勝手に供給を止めたり法外な価格にしたりしないよう、法律で厳しい「供給義務」と「価格規制」が課されています。"
+      },
+      {
+        id: 77, type: "○×",
+        question: "ゲームやYouTubeなどのルール（年齢制限や利用制限機能など）が作られている大きな目的は、温室効果ガスを削減し「環境問題を保護する」ことである。",
+        a: "○", b: "×", c: "-", d: "-", ans: "B",
+        exp: "ネット依存や有害な情報・トラブルから未成年者を守る「青少年の健全な育成と安全保障（公共の福祉）」が、各種ネットのルールが設定されている本当の目的です。"
+      },
+      {
+        id: 78, type: "○×",
+        question: "夜間の街頭整備やパトロール活動を通じて、国民が安全に安心して暮らせる「社会の秩序（治安）」を維持することは、国家や警察組織の最も基本的な役割である。",
+        a: "○", b: "×", c: "-", d: "-", ans: "A",
+        exp: "治安や安全な生活環境を維持することは、国家が存在する最も原始的な任務であり、この治安活動のためにみんなが納めた「税金」が投じられています。"
+      },
+      {
+        id: 79, type: "○×",
+        question: "一般家庭から出る日々のゴミの分別方法は、地球環境を保護して資源を再利用するために、地域（地方自治体）の「条例・法律」という公的ルールに基づいて義務付けられている。",
+        a: "○", b: "×", c: "-", d: "-", ans: "A",
+        exp: "分別ルールは住民の利便性を奪うためではなく、焼却負荷やゴミ埋め立て地の不足を事前に防ぐという、地方自治体が定めた条例（ルール）に沿って実施されています。"
+      },
+      {
+        id: 80, type: "○×",
+        question: "自分が考える理想の社会や解決すべき問題について、主体的に意見を持ち言葉にしてみることは、主権者（社会の主役）としての第一歩である。",
+        a: "○", b: "×", c: "-", d: "-", ans: "A",
+        exp: "世の中の不満をただ愚痴で終わらせるのではなく、「こうなったらもっと良くなる」と自分の頭で理想を描き（こうなったらいいな社会宣言）、政策として構想することが主権者のスタートです。"
+      },
+      {
+        id: 81, type: "○×",
+        question: "政治や政治家が「こんな新しい法律を作って社会を良くします」と提案する、具体的な解決策や仕組み、お金の使い道の計画のことを「政策」と呼ぶ。",
+        a: "○", b: "×", c: "-", d: "-", ans: "A",
+        exp: "政策（ポリシー）とは、社会課題を具体的に解決するために、政治が予算配分（税金）や法律の整備を用いて編み出す、実行可能なプランや法律案のことです。"
+      },
+      {
+        id: 82, type: "○×",
+        question: "第3回の主要政党リストに登場する「参政党」は、食料や教育を外国に頼らず国内を中心に整備する「日本重視（保守・右）」の考え方を持っている。",
+        a: "○", b: "×", c: "-", d: "-", ans: "A",
+        exp: "参政党は、日本の伝統文化や歴史、国内の食料自給、教育のあり方を日本重視で進めていこうとする保守（右）の政党アプローチです。"
+      },
+      {
+        id: 83, type: "○×",
+        question: "第3回における主要政党「自由民主党」は、格差の解消や社会の急進的な仕組みの変化、国防予算の完全廃止を主張するリベラル（左）の代表的な政党である。",
+        a: "○", b: "×", c: "-", d: "-", ans: "B",
+        exp: "自由民主党は、企業の成長による経済の活性化や国防の強化を重視する、日本の代表的な保守（右）の政党です（リベラルではありません）。"
+      },
+      {
+        id: 84, type: "○×",
+        question: "第3回に登場する主要政党「立憲民主党」は、格差を減らし、子どもや若者への支援を厚くして、ジェンダー平等など多様な生き方を認める社会（リベラル・左）を目指している。",
+        a: "○", b: "×", c: "-", d: "-", ans: "A",
+        exp: "立憲民主党は、お互いに多様性を認め合い、個人の権利の拡大や平等を重視して変化（法改正）を促進しようとするリベラル（左）の代表例です。"
+      },
+      {
+        id: 85, type: "○×",
+        question: "「日本維新の会」は、行政や政治そのものの無駄を徹底的に削り、税金の使い方を見直して効率を重視する「改革（保守・右）」を目指している。",
+        a: "○", b: "×", c: "-", d: "-", ans: "A",
+        exp: "日本維新の会は、行政のスリム化（身を切る改革）や規制緩和、効率的な予算配分を志向して成長を目指す保守（右）の政党アプローチです。"
+      },
+      {
+        id: 86, type: "○×",
+        question: "「公明党」は、中道（中）に位置する政党として、「福祉の党」をアピールし、特に子育て支援、介護、福祉制度の充実などの温かい社会づくりを優先している。",
+        a: "○", b: "×", c: "-", d: "-", ans: "A",
+        exp: "公明党は、お年寄りや子育て世代への直接支援、医療、年金、福祉などのきめ細かなサービスを最優先する中道の政党アプローチです。"
+      },
+      {
+        id: 87, type: "○×",
+        question: "「国民民主党」は、働く人の「給料（所得）を引き上げる」ことを最優先に掲げ、現役世代や子育て世帯の手取りを増やすことを主張する中道（中）の政党である。",
+        a: "○", b: "×", c: "-", d: "-", ans: "A",
+        exp: "国民民主党は、働く現役世代の手取りを増やすための税制改正や給料の引き上げ、ガソリン減税（トリガー解除）などをアピールする中道の政党です。"
+      },
+      {
+        id: 88, type: "○×",
+        question: "主要政党の「れいわ新選組」は、物価高対策として消費税の廃止や減税、直接給付金給付などを主張して、庶民生活の底上げ（平等・左）を目指している。",
+        a: "○", b: "×", c: "-", d: "-", ans: "A",
+        exp: "れいわ新選組は、消費税の減税・廃止、積極的な財政出動（国のお金を発行すること）による生活支援を強力に訴えるリベラル（左）の政党です。"
+      },
+      {
+        id: 89, type: "○×",
+        question: "主要政党の「社会民主党」は、平和主義である「日本の憲法（特に第9条）をそのまま守り」、戦争反対や安心できる生活保障を最重視（リベラル・左）している。",
+        a: "○", b: "×", c: "-", d: "-", ans: "A",
+        exp: "社会民主党は、非戦・平和外交による安全の確保や、憲法改悪反対、弱者の生存権の保護をアピールするリベラル（左）の政党です。"
+      },
+      {
+        id: 90, type: "○×",
+        question: "1つの政党だけでは議会の過半数を占められない場合などに、複数の政党が協力し合って政権（内閣）を組織して国を動かすことを「連立政権」と呼ぶ。",
+        a: "○", b: "×", c: "-", d: "-", ans: "A",
+        exp: "お互いの主要な政策を妥協しながら合意を作り、複数の政党（自民と公明など）が連なって政権を組織することを「連立政権」と言います。"
+      },
+      {
+        id: 91, type: "○×",
+        question: "法律案の決定において衆議院と参議院の意見が一致しなかった際、そのまま法律が作れなくなるのを防ぐため、両院の代表が妥協点を話し合う合同会議を「閣僚会議（閣議）」と呼ぶ。",
+        a: "○", b: "×", c: "-", d: "-", ans: "B",
+        exp: "衆参の決定が不一致になった場合に、国会内に代表者が集まって妥協点を調整する合同会議のことは「両院協議会」と呼びます（閣議は内閣の意思決定会議です）。"
+      },
+      {
+        id: 92, type: "○×",
+        question: "国会で成立した法律は、形式的・象徴的に「天皇」がサイン（国事行為として公布）するが、天皇は自分の気分や政治的意見でこれを拒否し法律を破棄できる。",
+        a: "○", b: "×", c: "-", d: "-", ans: "B",
+        exp: "天皇は政治的な実権（意思決定権）を持たないため（憲法第4条）、国会が決めた法律を天皇の個人的な意思でサイン拒否（拒否権の発動）することはできません。"
+      },
+      {
+        id: 93, type: "○×",
+        question: "多数決で物事を決定する前に、可能な限り反対派（少数派）の言い分や事情に耳を傾け、不利益を被る人を救う妥協点を見出す行為を「少数意見の尊重」と呼び、民主主義の質を高める重大原則である。",
+        a: "○", b: "×", c: "-", d: "-", ans: "A",
+        exp: "多数派の数の暴力で強行突破するのではなく、決定の前に「反対する理由」を考慮してルールの微調整を行うこと（少数意見の尊重）が、納得感を生む鍵となります。"
+      },
+      {
+        id: 94, type: "○×",
+        question: "災害が発生したときに、個人の避難経路や危険箇所を示す「ハザードマップ」を作成したり、避難所に備蓄食料を用意したりすることは、政治が平時（何も起きていないとき）から予算を使ってやっておくべき事前防災である。",
+        a: "○", b: "×", c: "-", d: "-", ans: "A",
+        exp: "災害が起きた当日だけではなく、事前（平時）から予算を投入してインフラを強靭化したり、避難経路を住民に周知（減災・防災）したりすることが、政治の重大な任務です。"
+      },
+      {
+        id: 95, type: "○×",
+        question: "観光ビジネスコースに関わりの深い、海外からの旅行客を誘致する「インバウンド振興」は、純粋な民間企業活動であり、国や自治体（政治）の法律やプロモーション予算、ビザ制度は一切関与していない。",
+        a: "○", b: "×", c: "-", d: "-", ans: "B",
+        exp: "ビザの緩和や入国手続き、観光庁や各自治体のプロモーション予算配分、外国人向けのバリアフリー法整備など、インバウンド振興には国や政治の意思決定が深く関わっています。"
+      },
+      {
+        id: 96, type: "○×",
+        question: "もしも社会の集めたお金（税金・国家予算）が無限に存在するとしたら、お互いの優先順位を争って話し合う必要（政治）はそもそも発生しない。",
+        a: "○", b: "×", c: "-", d: "-", ans: "A",
+        exp: "国の予算や使える資源が「有限」だからこそ、「誰を優先し、何を我慢するか（トレードオフ）」を話し合う必要があるため、もし資源が無限であれば政治（合意形成プロセス）は不要となります。"
+      },
+      {
+        id: 97, type: "○×",
+        question: "衆参の意見が一致しなかった場合に衆議院が優先される「衆議院の優越」は、衆議院の方が任期が短く解散があるため、より『最新の国民の意思（世論）』をダイレクトに代表しているという民主的理由に基づいている。",
+        a: "○", b: "×", c: "-", d: "-", ans: "A",
+        exp: "衆議院は参議院（任期6年解散なし）と違い、任期が4年で解散もあるため、最新の有権者投票（民意）をダイレクトに背負っているとみなされ、優先権（衆議院の優越）が憲法で保障されています。"
+      },
+      {
+        id: 98, type: "○×",
+        question: "国や自治体が無償の奨学金制度や、高校が無料で通える就学支援制度を用意している大きな目的は、家庭の経済的な事情による教育格差をなくし、主権者を等しく育てる「教育の機会均等」である。",
+        a: "○", b: "×", c: "-", d: "-", ans: "A",
+        exp: "お金がないからといって高校に行けない人が出ないよう、機会の不平等を解消し、社会を支える基礎教育を全員に保障することが、国の就学支援制度の目的です。"
+      },
+      {
+        id: 99, type: "○×",
+        question: "バイトを雇う際、店長や経営者は、どのような時給設定であっても国の定める基準に縛られず、自分が好きな金額（時給100円など）で働かせて良いことになっている。",
+        a: "○", b: "×", c: "-", d: "-", ans: "B",
+        exp: "雇用主は、国が法律に基づいて決定した地域の「最低賃金（時給）」以上の額を、必ず働いた人に支払わなければならないという法的な強制ルールが存在します。"
+      },
+      {
+        id: 100, type: "○×",
+        question: "主権者としての究極のゴールは、政治は難しくて複雑だから一切関心を持たず、自分の一票では何も変わらないと諦めて、すべての選挙を棄権することである。",
+        a: "○", b: "×", c: "-", d: "-", ans: "B",
+        exp: "無関心や選挙の棄権は主権者（国民）の権利の放棄であり、結果的に声の大きい特定のグループの意見ばかりが通る原因になります。自分で調べ、考え、投票に行くこと（主体的な参画）がゴールです。"
+      }
+    ];
+
+    const fillBlank = [
+      {
+        id: 101, type: "穴埋め",
+        question: "私たちが日常生活で買い物をする際、商品の価格に一律に上乗せされて徴収される、最も身近な税金の代表例は（ ① ）である。",
+        a: "消費税", b: "所得税", c: "住民税", d: "法人税", ans: "A",
+        exp: "買い物の際やサービス利用時に広く公平に課される間接税は「消費税」であり、高校生にとっても最も支払う機会が多い税金です。"
+      },
+      {
+        id: 102, type: "穴埋め",
+        question: "働く人々を不当に低い賃金から守るため、国が法律に基づいて定める最低限の賃金基準を（ ① ）という。",
+        a: "平均給与", b: "最低賃金", c: "基本月給", d: "特別手当", ans: "B",
+        exp: "労働者を不当な低賃金から守るため、最低賃金法に基づいて国が強制力を持たせて定めている基準を「最低賃金」と言います。"
+      },
+      {
+        id: 103, type: "穴埋め",
+        question: "何か一つの良い政策を実現しようとすると、莫大な費用が必要になり別の予算が削られたり、特定の立場の人に負担が生じたりする矛盾やあちらを立てればこちらが立たずの関係を（ ① ）という。",
+        a: "多数決方式", b: "ウィンウィン", c: "トレードオフ", d: "ポピュリズム", ans: "C",
+        exp: "予算が有限であるため、「何かを得るためには、何かを慢する」という選択に伴う損失・コストの関係性を「トレードオフ」と言います。"
+      },
+      {
+        id: 104, type: "穴埋め",
+        question: "国会において、国会議員たちの中から、国の最高責任者である内閣総理大臣を話し合いと多数決によって決定する行為を、憲法上の言葉で「内閣総理大臣の（ ① ）」という。",
+        a: "公選", b: "推薦", c: "任命", d: "指名", ans: "D",
+        exp: "国会議員が「国会議員の中から」総理大臣を決定する憲法上の行為は「指名」です。指名された総理を天皇が形式的に「任命」します。"
+      },
+      {
+        id: 105, type: "穴埋め",
+        question: "三権分立における「立法の府」であり、国民の代表者が集まって社会に必要な唯一の法律を制定する国の機関は（ ① ）である。",
+        a: "国会", b: "内閣", c: "法廷", d: "官庁", ans: "A",
+        exp: "日本国憲法第41条において、国権の最高機関であり、国の唯一の立法機関と定められている組織は「国会」です。"
+      },
+      {
+        id: 106, type: "穴埋め",
+        question: "三権分立における「行政の府」であり、国会議員から指名されたリーダーがチームを発足させ、法律を実行して国を運営する機関は（ ① ）である。",
+        a: "国会", b: "内閣", c: "法廷", d: "官庁", ans: "B",
+        exp: "行政権を持ち、法律や予算案に則って実際に警察や公務員を指揮し、国を動かすキャプテン役を務める機関は「内閣」です。"
+      },
+      {
+        id: 107, type: "穴埋め",
+        question: "三権分立における「司法の府」であり、政治や法律の決定が憲法に反していないかを最終チェックする憲法の番人としての役割を持つ機関は（ ① ）である。",
+        a: "参議院", b: "総理府", c: "裁判所", d: "法務省", ans: "C",
+        exp: "独立した中立な立場から法的なチェック（憲法違反審査）を行う司法権の最高機関は「裁判所（最高裁判所）」です。"
+      },
+      {
+        id: 108, type: "穴埋め",
+        question: "国家権力が1箇所に集中して独裁や暴走が発生し国民の自由が奪われるのを防ぐため、パワーを「立法・行政・司法」の３つに分立させ、相互に監視させ合う政治の仕組みを（ ① ）という。",
+        a: "地方自治", b: "天皇制度", c: "代表制民主", d: "三権分立", ans: "D",
+        exp: "国会（立法）・内閣（行政）・裁判所（司法）の３つの機関が互いに独立し、暴走を防ぐチェック機能を掛け合う仕組みを「三権分立」と言います。"
+      },
+      {
+        id: 109, type: "穴埋め",
+        question: "日本の国会が、多数派だけの偏った暴走や極端なルール決定を防ぎ、より慎重で多様な議論を重ねるために、衆議院と参議院の２つの議院を設けている制度を（ ① ）という。",
+        a: "二院制", b: "一院制", c: "首長制", d: "内閣制", ans: "A",
+        exp: "一院の感情的な決定や強引な採決を押し止め、安定したより良いルールにするために衆参の二つの議院を置く制度を「二院制」と言います。"
+      },
+      {
+        id: 110, type: "穴埋め",
+        question: "国会議員が所属する２つの院のうち、定数が465人で任期は4年であり、任期途中での解散があることから、より最新の国民の民意（世論）を反映しやすい院は（ ① ）である。",
+        a: "参議院", b: "衆議院", c: "総理府", d: "裁判所", ans: "B",
+        exp: "任期が短く解散があるため、「今、国民が何を求めているか」という最新の世論をダイレクトに反映しやすいのは「衆議院」です。"
+      },
+      {
+        id: 111, type: "穴埋め",
+        question: "国会議員が所属する２つの院のうち、定数が248人で任期は6年であり、任期途中での解散が一切ないことから、長期的な視野でじっくり落ち着いた審議ができる院は（ ① ）である。",
+        a: "衆議院", b: "総理府", c: "参議院", d: "裁判所", ans: "C",
+        exp: "解散がなく身分が安定しているため、一時のブームに流されることなく、冷静に慎重な議論（ブレーキ役）を行う院は「参議院」です。"
+      },
+      {
+        id: 112, type: "穴埋め",
+        question: "衆議院と参議院で、予算案や法案の決定で意見が一致しなかった場合、より国民の民意に近く、任期の短い側の議院の決定を国会全体の意思として優先させるルールを（ ① ）という。",
+        a: "参議院の同意", b: "内閣の不信任", c: "裁判所の判断", d: "衆議院の優越", ans: "D",
+        exp: "国会の意思決定が永久に平行線をたどってストップするのを防ぐため、国民に近い衆議院の決定を優先させるルールを「衆議院の優越」と言います。"
+      },
+      {
+        id: 113, type: "穴埋め",
+        question: "国会の委員会や本会議で十分に話し合われた後、提出された法案を認めるか、多数決などの決を採る行為を採決といい、これが両議院で認められることを（ ① ）という。",
+        a: "可決", b: "否決", c: "公布", d: "解散", ans: "A",
+        exp: "議院の採決において、賛成派が多数を占めて承認された段階（法律案のクリア）を「可決」と言います。両院可決で法律が成立します。"
+      },
+      {
+        id: 114, type: "穴埋め",
+        question: "国会で正式に成立した法律を、新しく作られたとして公式に官報などを通じて国民全体に広く知らせる行為を（ ① ）という。",
+        a: "可決", b: "公布", c: "採決", d: "指名", ans: "B",
+        exp: "成立した法律を国民に「広く公式に知らせる」プロセスのことを「公布」と言い、日本国憲法上、天皇が国事行為としてこれを行います。"
+      },
+      {
+        id: 115, type: "穴埋め",
+        question: "裁判所が持っている極めて強力な権限で、国会が作った法律や内閣が下した決定が、最高法規である憲法に違反して国民の権利を侵害していないかを審査する権利を（ ① ）という。",
+        a: "法案提出権", b: "衆議院解散権", c: "違憲審査権", d: "総理指名権", ans: "C",
+        exp: "国会（多数派）が憲法を無視した悪い法律を成立させても、裁判所がそれを「憲法違反➔無効」として止めることができる権利を「違憲審査権」と言います。"
+      },
+      {
+        id: 116, type: "穴埋め",
+        question: "観光ビジネスコースに深く関わりのある、海外からのインバウンド旅行客を増やす取り組みを（ ① ）と呼ぶ。",
+        a: "アウトバウンド規制", b: "デスティネーション調整", c: "ビザの強制終了", d: "インバウンド誘致", ans: "D",
+        exp: "海外からの観光旅行客（インバウンド）に日本を訪れてもらうためのアピールやインフラ整備を「インバウンド誘致」と呼びます。"
+      },
+      {
+        id: 117, type: "穴埋め",
+        question: "伝統的な価値観やこれまでの社会秩序を大切にしながら、段階的な社会の改革を目指す「右」の政治的立場を（ ① ）と呼ぶ。",
+        a: "進歩主義", b: "保守（保守主義）", c: "社会主義", d: "アナーキズム", ans: "B",
+        exp: "「守る・安定」をキーワードに、急激な変革を避けて伝統や既存の優れた制度を重んじる考え方を「保守」と呼びます。"
+      },
+      {
+        id: 118, type: "穴埋め",
+        question: "個人の多様な生き方やジェンダー平等の達成、弱者救済のための積極的な法改正などを主張する「左」の政治的立場を（ ① ）と呼ぶ。",
+        a: "リベラル", b: "懐古主義", c: "自由競争派", d: "権威主義", ans: "A",
+        exp: "「平等・変化」をキーワードに、格差の解消や個人の権利保護のために、既存の枠組みを積極的に変えようとする考え方を「リベラル」と呼びます。"
+      },
+      {
+        id: 119, type: "穴埋め",
+        question: "保守（右）とリベラル（左）の極端な意見を避け、中立的・折衷的なバランスのとれた実務的な政策決定を目指す立場を（ ① ）と呼ぶ。",
+        a: "進歩的改革", b: "伝統尊重", c: "中道", d: "市場自由", ans: "C",
+        exp: "極端な対立を嫌い、全体の「バランス」や「調和」を最優先して中間的な合意形成を試みる考え方を「中道」と呼びます。"
+      },
+      {
+        id: 120, type: "穴埋め",
+        question: "国会で多数の議席を確保し、内閣総理大臣を輩出して実際に国の政権（運営チーム）を担当する政党を（ ① ）という。",
+        a: "与党", b: "野党", c: "参議院", d: "裁判官", ans: "A",
+        exp: "選挙によって選ばれた代表たちのうち、多数派となって政権を担い、実際に政治（行政）を進めていく側のグループを「与党」と呼びます。"
+      },
+      {
+        id: 121, type: "穴埋め",
+        question: "政権を担う与党のやり方に問題がないかを厳しく監視・批判し、国民の少数意見を代弁して権力をチェックする政党を（ ① ）という。",
+        a: "与党", b: "国会役員", c: "裁判官", d: "野党", ans: "D",
+        exp: "政権の暴走や独裁、不透明な政治を防ぐために、批判的な視点からブレーキをかけるお仕事を担う対抗グループを「野党」と呼びます。"
+      },
+      {
+        id: 122, type: "穴埋め",
+        question: "学校を小さな国家と捉えたとき、生徒全員が公平で安全に過ごすために守らなければならない「校則・学校ルール」は、国の（ ① ）に相当する。",
+        a: "法律", b: "憲法", c: "予算", d: "判決", ans: "A",
+        exp: "従わなければペナルティが発生する、共同体全員の安全・平等のための最高強制ルールである校則は、国における「法律」に対応します。"
+      },
+      {
+        id: 123, type: "穴埋め",
+        question: "生徒全員の選挙によって代表として選ばれ、生徒会室で生徒会活動を率いる「生徒会長」は、国の（ ① ）に相当する。",
+        a: "最高裁判所長官", b: "天皇", c: "内閣総理大臣", d: "衆議院議長", ans: "C",
+        exp: "有権者（生徒）から選ばれたリーダーとして、学校（国）を実際に引っ張る最高責任者は、国政における「内閣総理大臣」に対応します。"
+      },
+      {
+        id: 124, type: "穴埋め",
+        question: "生徒会長と一緒に実際の生徒会活動（イベント運営、目安箱管理、予算案作成）を処理する「生徒会役員」は、国の（ ① ）に相当する。",
+        a: "国会", b: "内閣", c: "裁判所", d: "各省庁", ans: "B",
+        exp: "生徒会長（総理大臣）のもとで、実際の生徒会の仕事を協力して実行（行政の執行）する役員は、総理大臣を支える「内閣」に対応します。"
+      },
+      {
+        id: 125, type: "穴埋め",
+        question: "生徒会において選挙で会長を選び、校則というルールに従いながら生活している学校の主役である「生徒」全員は、国における（ ① ）に相当する。",
+        a: "国民", b: "国会議員", c: "国務大臣", d: "裁判官", ans: "A",
+        exp: "ルールを守り代表を選ぶ投票権を持つ、学校におけるすべての意思決定の主権者たる生徒は、国における「国民」に対応します。"
+      },
+      {
+        id: 126, type: "穴埋め",
+        question: "生徒全員から一律に回収され、文化祭や委員会などの生徒会活動の使い道の計画に充てられる「生徒会費（生徒会予算）」は、国の（ ① ）に相当する。",
+        a: "私有貯金", b: "国家予算", c: "給料明細", d: "平均得点", ans: "B",
+        exp: "みんなから集めたお金（会費＝税金）を、みんなの便利さのためにどう使うかの計画であるため、国における「国家予算」に対応します。"
+      },
+      {
+        id: 127, type: "穴埋め",
+        question: "一党のみでは過半数に達しないときなどに、複数の与党が協力して合意を形成し、合同で政権（内閣）を組織することを（ ① ）政権という。",
+        a: "連立", b: "臨時", c: "直接", d: "独占", ans: "A",
+        exp: "お互いの主要な政策を妥協しながら合意を作り、複数の政党（自民と公明など）が連なって政権を組織することを「連立政権」と言います。"
+      },
+      {
+        id: 128, type: "穴埋め",
+        question: "衆議院と参議院で法案可決内容に食い違いが出た際、空中分解を防ぐために両院から代表が集まって妥協点を話し合う国会の合同会議を両院（ ① ）という。",
+        a: "不信任会", b: "協議会", c: "最高法廷", d: "国民審判", ans: "B",
+        exp: "国会で衆参不一致が発生した際に、意見のすり合わせを行うために国会内に設けられる会議システムを「両院協議会」と呼びます。"
+      },
+      {
+        id: 129, type: "穴埋め",
+        question: "天皇は日本国憲法上政治の実権を持ちませんが、法律の公布など儀礼的・形式的にサインを行う役割を天皇の（ ① ）行為という。",
+        a: "独断判決", b: "違憲審査", c: "緊急措置", d: "国事", ans: "D",
+        exp: "天皇が行う「公布」などは政治の実権とは無関係であり、内閣の助言と承認に基づいて行う形式的なもので「国事行為」と呼ばれます。"
+      },
+      {
+        id: 130, type: "穴埋め",
+        question: "クラスや国の話し合い（多数決）において、勝負を急いで強引に押し切るのではなく、数の少ない側の理由も聞き配慮することを（ ① ）の尊重という。",
+        a: "少数意見", b: "多数意見", c: "リーダー", d: "教員支持", ans: "A",
+        exp: "多数派の数の暴力で強行するのではなく、決定の前に「反対する理由」を考慮してルールの微調整を行うことを「少数意見の尊重」と呼びます。"
+      },
+      {
+        id: 131, type: "穴埋め",
+        question: "異なる意見や事情を持つ人々が話し合いによって妥協点を探り、参加者全員が納得してルールを守れる解決策を導き出すプロセスのことを（ ① ）形成という。",
+        a: "意思決定", b: "合意", c: "派閥", d: "多数決", ans: "B",
+        exp: "お互いが歩み寄って、全員が納得（合意）できるルールを作ること、すなわち全員でルールを守る納得感を作る一連の対話を「合意形成」と呼びます。"
+      },
+      {
+        id: 132, type: "穴埋め",
+        question: "衆議院は参議院より任期が短く解散があるため、その時々の国民の声を素早く反映して決定できる（ ① ）重視の院とみなされている。",
+        a: "安定性", b: "慎重さ", c: "スピード感", d: "専門性", ans: "C",
+        exp: "解散があり最新の世論を敏感に反映しやすい衆議院は、スピーディーに国の意思を決定できる「スピード感」が期待されています。"
+      },
+      {
+        id: 133, type: "穴埋め",
+        question: "参議院は解散がなく任期も6年と長いため、一時の熱狂に流されず、長期的な視野でじっくり落ち着いて話し合いをする（ ① ）重視の院とみなされている。",
+        a: "解散", b: "スピード感", c: "直接民主", d: "慎重さ", ans: "C",
+        exp: "任期の長さと解散がない特徴から、じっくり時間をかけてチェックを施す「慎重さ・安定性（良識の府）」が参議院の持ち味です。"
+      },
+      {
+        id: 134, type: "穴埋め",
+        question: "進学や学びの機会を守るための奨学金において、将来的に国や団体に返済する義務がなく、実質的に支援としてお金を受け取れる制度を（ ① ）奨学金という。",
+        a: "貸与型", b: "金利型", c: "給付型", d: "借用型", ans: "C",
+        exp: "家庭の経済格差による進学の断念を防ぐため、将来返還する必要のない奨学金の仕組みを「給付型奨学金」と呼びます。"
+      },
+      {
+        id: 135, type: "穴埋め",
+        question: "平時から予算を用いて道路や橋を強靭化（耐震補強）したり、住民に危険箇所を知らせるハザードマップを周知したりする事前対策のことを（ ① ）活動という。",
+        a: "復興支援", b: "防災（減災）", c: "軍事演習", d: "気象観測", ans: "B",
+        exp: "災害による死傷者や被害を最小限に抑えるため、平時の予算を使って事前に防衛網や危険地図を作る対策を「防災（減災）」と言います。"
+      },
+      {
+        id: 136, type: "穴埋め",
+        question: "若者の人口、仕事、大学や最先端産業が、すべて特定の巨大都市（東京など）ばかりに極端に集まり集中してしまう問題を東京（ ① ）と呼ぶ。",
+        a: "一極集中", b: "分散化", c: "完全封鎖", d: "地方自治", ans: "A",
+        exp: "仕事や学校の機会が東京ばかりに集まり、地方の若者が流出し続けて過疎化を加速させる現状を「東京一極集中」と呼びます。"
+      },
+      {
+        id: 137, type: "穴埋め",
+        question: "過度な一極集中による地方の過疎化を食い止め、観光ビジネスプロモーションや名産品創出などで活気を呼び戻す取り組みを地域（ ① ）という。",
+        a: "民営化", b: "一極集中", c: "活性化", d: "直接管理", ans: "C",
+        exp: "地方の経済と生活インフラを救い、日本全体の持続可能な均衡を保つために地方を活気づける取り組みを「地域活性化（地方創生）」と言います。"
+      },
+      {
+        id: 138, type: "穴埋め",
+        question: "政治家や候補者が選挙時に掲げる約束で、具体的な政策目標だけでなく、実施期限や手段、必要となる財源までを明確に記したものを（ ① ）という。",
+        a: "活動報告書", b: "住民要望書", c: "誓約書", d: "マニフェスト（政権公約）", ans: "D",
+        exp: "単なるスローガンと違い、予算の「財源」や「期限」を数値的に有権者へコミットして約束するものが「マニフェスト」です。"
+      },
+      {
+        id: 139, type: "穴埋め",
+        question: "「全員に給食を無償化する」といった魅力的な良い公約を実現するために、政治家があらかじめそのお金の確保方法（トレードオフの計画）を明示することを（ ① ）の確保という。",
+        a: "財源", b: "キャッチコピー", c: "ボランティア", d: "政党名", ans: "A",
+        exp: "政策を実行するには莫大なお金が必要です。その費用をどこから調達して支払うのかという計画を示すことが「財源の確保」です。"
+      },
+      {
+        id: 140, type: "穴埋め",
+        question: "「もし自分が政治家やリーダーなら、こんなルールで社会をより良くしたい」と自分の頭で理想の社会像を構想して言葉にするワークを（ ① ）社会宣言という。",
+        a: "「こうなったらいいな」", b: "インバウンドプロモーション", c: "マニフェスト公約", d: "高校生制限スマホ", ans: "A",
+        exp: "日常生活の不満をただ放置せず、「こうなったら良い」と理想の社会を言語化するワークが、主権者としてのスタートライン（社会宣言）です。"
+      },
+      {
+        id: 141, type: "穴埋め",
+        question: "家庭の子育て負担の軽減や健康的な食育のため、みんなの税金を用いて小中学校の給食をすべての家庭で無料提供すること給食の（ ① ）という。",
+        a: "民営化", b: "義務化", c: "無償化", d: "自由化", ans: "C",
+        exp: "経済格差による子どもの栄養不足や教育格差をなくすため、公金で給食代を無料（カバー）にする動きを「給食の無償化」と言います。"
+      },
+      {
+        id: 142, type: "穴埋め",
+        question: "歩行者の安全や事故を未然に防ぐため、警察や法律の関与によって自転車の走行方法、左側通行などの（ ① ）が強化されている。",
+        a: "完全無料化", b: "ルール", c: "民営化", d: "禁止措置", ans: "B",
+        exp: "個人の自転車利用における暴走による歩行者の怪我を防ぐため、政治は「走行ルール」を設定して安全（公共の福祉）を守っています。"
+      },
+      {
+        id: 143, type: "穴埋め",
+        question: "買い物の際、プラスチック製品の使い捨て削減や環境問題への関心を高める目的で実施された、プラスチック製レジ袋の（ ① ）は環境対策ルールである。",
+        a: "有料化", b: "完全廃止", c: "無料化", d: "製造禁止", ans: "A",
+        exp: "ゴミの削減や地球温暖化防止のための環境ルールの一環として、レジ袋の「有料化」といった法的なアプローチが実施されました。"
+      },
+      {
+        id: 144, type: "穴埋め",
+        question: "大地震の発生時、個人の自宅が損壊したり危険になった際に、命と安全を救うために地方自治体が公式に実施する、避難所の（ ① ）は政治の大きな仕事である。",
+        a: "閉鎖処分", b: "開設", c: "民営化", d: "購入推奨", ans: "B",
+        exp: "被災した住民が迅速に身を寄せて安全と生活物資を確保できるよう、速やかに「避難所を開設」することは自治体の義務です。"
+      },
+      {
+        id: 145, type: "穴埋め",
+        question: "不適切な行いや重大な義務違反をした裁判官を、国会が厳しくチェックしてその仕事を辞めさせる（罷免する）仕組みを（ ① ）裁判という。",
+        a: "弾劾", b: "最高裁", c: "少年", d: "行政", ans: "A",
+        exp: "司法権を持つ裁判官であっても、暴走や非行をした場合には国会（国民の代表）の「弾劾裁判」によって罷免（クビ）にできる仕組みです。"
+      },
+      {
+        id: 146, type: "穴埋め",
+        question: "裁判所が持っている極めて強力なチェック機能で、国会が作った法律が国の最高ルールである憲法に背いていないかを厳しく審査することを、違憲法令（ ① ）という。",
+        a: "破棄権", b: "提出権", c: "審査（違憲審査）", d: "制定", ans: "C",
+        exp: "国会が作った法律を、憲法に違反している（人権を侵害しているなど）として無効にできる審査の権利を「違憲法令審査（違憲審査）」と言います。"
+      },
+      {
+        id: 147, type: "穴埋め",
+        question: "主権者（有権者）である私たち国民は、選挙や自分の意見の発信という政治的な行動を通じて、自分たちの生きる社会ルールをより良く（ ① ）ことができる。",
+        a: "諦める", b: "破壊する", c: "変える", d: "服従する", ans: "C",
+        exp: "社会の仕組みやルールは不変の石碑ではなく、主権者の意思（選挙や議論）によって新しくより良く「変える」ことができる当事者です。"
+      },
+      {
+        id: 148, type: "穴埋め",
+        question: "日本の主要政党の一つである自由民主党は、企業の成長、防衛重視、社会の急激な変化を避ける安定をアピールする、イデオロギー上の（ ① ）の代表例である。",
+        a: "保守（右）", b: "リベラル（左）", c: "社会主義", d: "全体主義", ans: "A",
+        exp: "企業の成長による経済の安定や防衛体制の維持、急激な変革を避ける立場をとる自民党は「保守（右）」の代表的な政党です。"
+      },
+      {
+        id: 149, type: "穴埋め",
+        question: "最大野党である立憲民主党は、格差の縮小、子ども若者支援、夫婦別姓の承認など、個人の多様な生き方や変化を支持する（ ① ）の代表例である。",
+        a: "保守（右）", b: "リベラル（左）", c: "中道改革", d: "全体主義", ans: "B",
+        exp: "格差の是正、個人の多様性、既存のルールを見直して変化を起こそうとする立憲民主党は「リベラル（左）」の代表的な政党です。"
+      },
+      {
+        id: 150, type: "穴埋め",
+        question: "観光ビジネスコースにおいて重要とされる、地方の観光スポットのプロモーション活動やインフラ整備を通じて、地域にお金と人を呼び戻す取り組みを観光（ ① ）という。",
+        a: "規制", b: "閉鎖", c: "振興", d: "民営", ans: "C",
+        exp: "観光名所のアピールやプロモーション、受け入れ整備などを国や自治体が支援して地域経済を活性化させる行為を「観光振興」と言います。"
+      }
+    ];
+
+    const termExplanation = [
+      {
+        id: 151, type: "用語説明",
+        question: "「三権分立」という用語の説明として、最も適切なものはどれですか。",
+        a: "一人の絶対的な王様が、法律の制定、国の運営、裁判のすべてを一人で支配する仕組み",
+        b: "国家権力を立法（国会）・行政（内閣）・司法（裁判所）の３つに分け、相互に監視させ合う仕組み",
+        c: "地方自治体が国の指示を一切受けず、自分たちの地域を完全に独立させて運営する仕組み",
+        d: "国民全員が代表者を通さず、あらゆる国のルールを毎日スマートフォンのアンケートで決める仕組み", ans: "B",
+        exp: "三権分立は、権力の集中や濫用（独裁）を防ぎ、国民の自由や権利を保護するため、パワーを3つの機関に分散して抑制させ合う仕組みです。"
+      },
+      {
+        id: 152, type: "用語説明",
+        question: "「トレードオフ」という用語の説明として、最も適切なものはどれですか。",
+        a: "あちらを立てればこちらが立たないという、何かを得るために他方を我慢・負担する関係性",
+        b: "取引に関わる双方が、お互いに不利益（コスト）を一切負うことなく大満足で利益を得る関係性",
+        c: "選挙の際、政党が財源を一切考慮せず、ただ国民に都合の良い無料化政策ばかりを約束すること",
+        d: "多数決によって決定されたルールに対して、不満を持つすべての少数意見を無理やり従わせる関係性", ans: "A",
+        exp: "予算や公共の資源が有限であるため、「何か（給食無償化など）を実行するには、別の予算を削るか増税を求める」という矛盾の仕組みをトレードオフと言います。"
+      },
+      {
+        id: 153, type: "用語説明",
+        question: "「マニフェスト（政権公約）」の説明として、最も適切なものはどれですか。",
+        a: "当選した政治家が、任期中の数年間に何をしても国民から文句を言われないようにするフリーパスの書面",
+        b: "具体的な政策目標に加え、実行期限、手段、必要となる財源の確保方法を明記した国民への約束書",
+        c: "有権者から「閲覧料」を徴収して政党の資金を増やすための、ビジネス用のパンフレット",
+        d: "日本の歴史ある伝統的なルールを変更せず、現状のまま永久に維持することを誓う法的誓約書", ans: "B",
+        exp: "単なる人気取りのスローガンと違い、有権者が当選後「本当に実行しているか」を事後チェックできるよう、財源や期限を明記した約束が「マニフェスト」です。"
+      },
+      {
+        id: 154, type: "用語説明",
+        question: "「消費税」という用語の説明として、最も適切なものはどれですか。",
+        a: "個人の給料（所得）に対して、会社から直接天引きされることで徴収される代表的な直接税",
+        b: "買い物やサービス利用のたびに公平・一律に課され、社会保障などの財源となる最も身近な間接税",
+        c: "大企業の利益のみに対して課され、一般の庶民の家計負担をゼロにすることを目的とした税金",
+        d: "ガソリンの購入時にのみ課され、すべての道路やインフラ修復の目的のためにのみ使われる特定の税金", ans: "B",
+        exp: "消費税は買い物をする全員に広く一律に課され、国全体の社会保障（年金、医療、子育てなど）を維持するための極めて重要な間接税です。"
+      },
+      {
+        id: 155, type: "用語説明",
+        question: "「最低賃金」という用語の説明として、最も適切なものはどれですか。",
+        a: "雇用主が店舗の経営状態やバイトの能力に応じて、自由に決めて支払ってよいとされる時給目安",
+        b: "ボランティア団体が、この金額で働いてくれたら嬉しいと推奨する法的な強制力のない参考額",
+        c: "個人の交渉力や雇用の契約書に書かれた金額のみを優先し、国は一切関与しないとされる賃金",
+        d: "労働者の生活安定と権利を守るため、最低賃金法に基づいて国が強制力を持たせて定める時給の下限", ans: "D",
+        exp: "弱い立場になりがちな働く人を守るため、雇用主は国が定めた地域の「最低賃金」以上の額を必ず支払わなければならないという強制ルールです。"
+      },
+      {
+        id: 156, type: "用語説明",
+        question: "「二院制」という用語の説明として、最も適切なものはどれですか。",
+        a: "国会議員の数を大幅に増やし、国の公的予算を余分に割り当てるために作られた制度",
+        b: "国会を衆議院と参議院の２つの院で構成し、多数派の暴走や極端なルール決定を防ぎ慎重に審議する制度",
+        c: "衆議院と参議院で完全に仕事を分担し、常にすれ違わせて意思決定をストップさせるための制度",
+        d: "一方の院を他方の院の従属組織（子分）とし、すべての決定をそのまま自動で通すための制度", ans: "B",
+        exp: "一つの院だけでは一時的な感情や大勝した勢力による極端なルールが作られやすいため、二つの院で重ねてチェックを行う仕組みが「二院制（両院制）」です。"
+      },
+      {
+        id: 157, type: "用語説明",
+        question: "「衆議院の優越」という用語の説明として、最も適切なものはどれですか。",
+        a: "衆議院は参議院より人数が多く、議員の平均年齢が若いため、すべての決定が常に最上位とされるルール",
+        b: "衆議院は解散があり任期も短いため、より最新の民意を背負っているとみなされ決定が優先されるルール",
+        c: "衆議院が作った法律に対して、参議院や内閣が不満を言ったり拒否したりすることを一切禁止するルール",
+        d: "衆議院の決定した内容であれば、裁判所の憲法違反チェック（違憲審査）を自動でパスできるルール", ans: "B",
+        exp: "衆議院は解散制度があり任期が短いため、よりダイレクトに有権者の最新の世論を代表していると考えられ、予算や総理指名の不一致時に優越が認められています。"
+      },
+      {
+        id: 158, type: "用語説明",
+        question: "「合意形成」という用語の説明として、最も適切なものはどれですか。",
+        a: "対立する意見を話し合いですり合わせ、参加者全員が納得してルールを守れる妥協的解決策を導き出すこと",
+        b: "多数決で一度勝敗が決まったら、数の少ない反対派の不満や事情は一切考慮せず完全に無視すること",
+        c: "自分の意見だけをルールとして強制するため、相手の主張をののしり、徹底的に対話を拒否すること",
+        d: "どんなに意見が分かれても、話し合いの時間をゼロにし、完全にコインの裏表や多数決で即決すること", ans: "A",
+        exp: "民主主義は「数の暴力」ではなく、異なる立場の人々が歩み寄り、誰もが「納得してルールに従える（合意）」状態を編み出す対話プロセス（合意形成）が目的です。"
+      },
+      {
+        id: 159, type: "用語説明",
+        question: "「少数意見の尊重」という用語の説明として、最も適切なものはどれですか。",
+        a: "多数決で物事を決定する前に、数の少ない側の理由や困る人の事情にも耳を傾けて妥協点を調整すること",
+        b: "クラスや国の話し合いにおいて、人数が最も多いグループ（多数派）の言うことだけを常に優先すること",
+        c: "多数派の意見を完全に不当とみなして却下し、極端な少数派の要求だけを常に100%全額予算に通すこと",
+        d: "意見が対立したお互いが不快になり、今後の国会運営やクラスの話し合いを全面的にストップさせること", ans: "A",
+        exp: "ただの多数派のゴリ押しにさせないため、反対派（少数派）の言い分も事前に聞き、不利益を受ける人を救う妥協的調整をルールに反映することを「少数意見の尊重」と言います。"
+      },
+      {
+        id: 160, type: "用語説明",
+        question: "観光ビジネスコースにおいて重要とされる「インバウンド」という用語の説明はどれですか。",
+        a: "海外（他国）から日本へ訪れて観光や買い物、ビジネスをする旅行客（またはその誘致活動）",
+        b: "日本国内から海外の国へ観光や留学のために出国する日本人旅行客（またはその支援）",
+        c: "旅行客が自分の部屋から一切出ることなく、バーチャルリアリティで仮想観光を楽しむ技術",
+        d: "国内外を問わず、すべての観光客に対して、観光地の文化や自然の保護のために立ち入りを禁止する措置", ans: "A",
+        exp: "観光ビジネスコースで重要な「インバウンド」は、日本を訪れる外国人旅行客やその誘致活動を指し、これも観光プロモーション予算などの政策と関わっています。"
+      },
+      {
+        id: 161, type: "用語説明",
+        question: "政治的イデオロギーである「保守（右）」の説明として、最も適切なものはどれですか。",
+        a: "既存の伝統や社会秩序、これまでの仕組みを重んじ、大きな混乱を避けるために少しずつ改善する立場",
+        b: "社会の仕組みを今すぐゼロからすべて破壊し、完全に不平等や格差のない共産主義的ユートピアを築く立場",
+        c: "一切の社会の発展や近代技術の使用を全面拒絶し、江戸時代などの完全に過去の生活に逆行させる立場",
+        d: "すべての政治活動や選挙に無関心になり、自分たちのコミュニティ運営を他者にすべて任せて放棄する立場", ans: "A",
+        exp: "保守（右）は「守る・安定」をキーワードとし、長い歴史の中で引き継がれた優れた社会システムを尊重し、段階的に慎重な改善を目指す立場です。"
+      },
+      {
+        id: 162, type: "用語説明",
+        question: "政治的イデオロギーである「リベラル（左）」の説明として、最も適切なものはどれですか。",
+        a: "企業の経済的成長や、伝統の維持、防衛体制の強化のみを何よりも最優先で推進する立場",
+        b: "社会のさまざまな不平等や格差をなくすことを最重視し、既存のシステムを積極的に変革していこうとする立場",
+        c: "極端な右と左の意見の対立を嫌い、中立・調和を保ちながら状況に応じて折衷案を探る立場",
+        d: "あらゆる規則や国家権力の関与を完全に否定し、国民個人の勝手な暴力や無秩序な生活を容認する立場", ans: "B",
+        exp: "リベラル（左）は「平等・変化」をキーワードとし、社会格差の是正、多様な価値観の承認、新しい権利を守るためのスピーディーな法改正を志向する立場です。"
+      },
+      {
+        id: 163, type: "用語説明",
+        question: "政治的イデオロギーである「中道（中）」の説明として、最も適切なものはどれですか。",
+        a: "伝統の維持や防衛力の強化、企業の成長による経済安定のみを何よりも押し出す考え方",
+        b: "格差の解消やジェンダー平等、多様性の確保のために既存のあらゆるルールを急進的に変革する考え方",
+        c: "極端な保守（右）とリベラル（左）の対立を避け、両者のバランスを保ち調和や折衷を目指す考え方",
+        d: "すべての政治や選挙に関心を失い、クラスのリーダーや教員が決定したことに100%盲従する考え方", ans: "C",
+        exp: "中道（中）は「バランス」をキーワードとし、保守とリベラルの極端な偏りを拒み、現実的で誰にとっても実務的な折衷案（すり合わせ）を導き出すアプローチです。"
+      },
+      {
+        id: 164, type: "用語説明",
+        question: "政治活動における「与党」の説明として、最も適切なものはどれですか。",
+        a: "国会で多数派の議席を占め、内閣総理大臣を指名して実際に政権（国を運営するチーム）を担う政党",
+        b: "国会で少数派となり、政権を担うグループのやり方や予算に問題がないかを監視し批判する政党",
+        c: "法律を自分たちだけで1人で作る権限を持ち、裁判所の憲法違反チェックを免除される特権的な政党",
+        d: "落選した国会議員候補者だけで構成され、国の予算案の作成を補助することのみを行う臨時組織", ans: "A",
+        exp: "与党は実際に内閣（政権）を組織して国を動かすキャプテン役を務め、国会で法案や予算を通す主導権を握る政党です。"
+      },
+      {
+        id: 165, type: "用語説明",
+        question: "政治活動における「野党」の説明として、最も適切なものはどれですか。",
+        a: "国会で多数を占め、実際の道路整備、税金回収、警察活動などを指揮して国をパトロールする政党",
+        b: "与党一強による独裁や暴走、汚職を防ぐため、政権を監視・批判してブレーキをかける役割を持つ政党",
+        c: "大企業の利益のみを優遇し、労働者の最低賃金を一律で時給100円まで不当に引き下げる政党",
+        d: "国会議員ではない外部の専門家や法学者のみが集まり、内閣総理大臣を独断でクビにする裁判組織", ans: "B",
+        exp: "野党は政権の暴走を監視する役割（ブレーキ役）を持ち、少数派国民の声を代弁してより良い議論を国会に促す重要なチェック政党です。"
+      },
+      {
+        id: 166, type: "用語説明",
+        question: "日本の統治機構である「議院内閣制」の説明として、最も適切なものはどれですか。",
+        a: "国民が大統領選挙のように直接一票を投じて国の最高責任者（総理大臣）を決定する政治の仕組み",
+        b: "国民が選挙で選んだ代理人（国会議員）たちが、国会の信頼に基づいて内閣総理大臣を指名する仕組み",
+        c: "前任の総理大臣が、次の総理大臣候補を後継者として勝手に指名して引き継がせる政治の仕組み",
+        d: "最高裁判所の裁判官たちが、法律知識の最も優れた官僚をリーダーに指名して国を直接運営させる仕組み", ans: "B",
+        exp: "議院内閣制は、国会（立法）と内閣（行政）が密接に協力し、内閣が国民の代表である国会の信頼（多数決）に基づいて発足する仕組みです。"
+      },
+      {
+        id: 167, type: "用語説明",
+        question: "裁判所の持つ「違憲審査権」の説明として、最も適切なものはどれですか。",
+        a: "最高裁判所が毎月独自の判断で、新しい便利な法律を国会を無視して書き加える権利",
+        b: "国会が作った法律や内閣の行いが、最高法規である憲法に違反していないかを最終審査する権利",
+        c: "犯罪を犯した一般の国民を、裁判を通さずに警察がその場で逮捕して一生刑務所に監禁する権利",
+        d: "内閣総理大臣が不当な政治を行った場合に、裁判所長官が独断で総理をクビにする特別人事権", ans: "B",
+        exp: "違憲審査権（憲法の番人）は、国会が多数派のノリで国民の基本的人権を侵害する悪い法律を作ったとしても、裁判所がそれを「憲法違反➔無効」として無力化できる強力なブレーキ権です。"
+      },
+      {
+        id: 168, type: "用語説明",
+        question: "国会に設置される「弾劾裁判所」の説明として、最も適切なものはどれですか。",
+        a: "地方自治体の知事たちが、国の命令に従わないお年寄りを特別に罰するために設置する特別法廷",
+        b: "非行や著しい義務違反を行った裁判官を免職（罷免）させるために、国会内に設置される特別裁判所",
+        c: "大震災などの非常事態時に、ボランティア団体が地域の泥棒を裁判なしでその場で罰する仮設法廷",
+        d: "内閣総理大臣の指揮の下、他国との戦闘準備や軍事活動における違反者を裁くための軍事法廷", ans: "B",
+        exp: "三権分立における相互チェック機能（国会から裁判所への牽制）として、非行を行った裁判官を罷免するために、国会議員で組織される裁判所です。"
+      },
+      {
+        id: 169, type: "用語説明",
+        question: "法律の制定プロセスにおける「公布」の説明として、最も適切なものはどれですか。",
+        a: "内閣が作った法律の原案（法案）を、話し合いをスタートさせるために国会へ提出するプロセス",
+        b: "国会で成立した法律を、公式に官報などを通じて国民全体に「広く知らせる」形式的な天皇の国事行為",
+        c: "提出された法案を認めるか、衆議院と参議院で多数決をとって賛成派が多数を占めて可決するプロセス",
+        d: "一度作られた古い法律を、時代の変化（スマホAIの普及など）に合わせて新しく書き直すプロセス", ans: "B",
+        exp: "法律は国民が周知されなければ守りようがありません。そのため、成立した法律を広く国民全体にお披露目する（公布する）お仕事を、天皇が形式的な国事行為として行います。"
+      },
+      {
+        id: 170, type: "用語説明",
+        question: "法律の制定プロセスにおける「可決」の説明として、最も適切なものはどれですか。",
+        a: "提出された法案に対して話し合いが行われた結果、多数決（採決）で承認され法律案がクリアすること",
+        b: "提出された法案に対して、反対派が圧倒的多数を占めたため、その法律案が不成立・却下されること",
+        c: "国会でクリアされた法律を、天皇が象徴的な国事行為として広く主権者（国民）に公式にお披露目すること",
+        d: "古い法律を、時代の変化や実態に合わせて国会で再び話し合って新しくアップデートするプロセス", ans: "A",
+        exp: "法案が議院の採決によって「賛成多数で承認される」ことを可決と呼び、衆参両院で可決されることで晴れて法律が「成立」します。"
+      },
+      {
+        id: 171, type: "用語説明",
+        question: "生徒会と政治の対応において、「生徒会長」という存在の本質的な説明はどれですか。",
+        a: "学校を小さな社会としたとき、生徒全員（主権者）から選挙で選ばれた行政の最高責任者（首相）に相当する役職",
+        b: "学校を動かすお仕事において、民主的な選挙を一切通さずに、先生たちが勝手にお気に入りを割り当てる役職",
+        c: "クラスの平均点データの集計や、部活動の入部届の審査を独断で行い、従わない生徒を学校から追放する役職",
+        d: "生徒全員から一律に集めた会費（予算）を、自分のプライベートな娯楽や友達のお菓子のためにのみ消費する役職", ans: "A",
+        exp: "生徒会長は、生徒という主権者（国民）から「選挙」という正当な手続きで選ばれ、生徒会室というチーム（内閣）を率いて実務を行うため、内閣総理大臣（首相）に対応します。"
+      },
+      {
+        id: 172, type: "用語説明",
+        question: "生徒会と政治の対応において、「校則・学校のルール」の本質的な説明はどれですか。",
+        a: "生徒一人ひとりが自分の自由な時間の使い方を学ぶために、自分が好きなように破ってよいとされる目安",
+        b: "教科書に書かれた学習ガイドであり、これに反したからといって学校生活の規律を直接制限しないもの",
+        c: "生徒全員（国民）が、公平で安全に過ごすために従わなければならない、学校における最高ルール（法律相当）",
+        d: "学校のイベントスケジュールをただカレンダーに整理した、いつでも自由に変更可能な予定表", ans: "C",
+        exp: "校則は、学校生活における不公平や事故を防ぎ、全員が快適に過ごせるよう設けられた最高強制規律であり、国における「法律」に対応する比喩構造です。"
+      },
+      {
+        id: 173, type: "用語説明",
+        question: "生徒会と政治の対応において、「生徒全員（一人ひとり）」の本質的な説明はどれですか。",
+        a: "選挙権（代表を選ぶ権利）を持たず、クラス担任の先生が決定したことにただ無条件に従うべき部下",
+        b: "生徒会選挙を通じて公平に代表者を選び、校則というルールに従いながら生活する学校の主役（主権者）",
+        c: "テストの平均点データのみによって機械的にクラス分けされ、自分の意見を持つことを禁止された存在",
+        d: "学校の施設や体育館をすべて自分の判断だけで民営化させ、他者の立ち入りを自由に禁止できる特権者", ans: "B",
+        exp: "生徒会長を選ぶ一票（投票権）を持ち、校則を守り、生徒会予算に充てる会費を支払う学校の主役は、国における「主権者（国民）」に対応します。"
+      },
+      {
+        id: 174, type: "用語説明",
+        question: "生徒会と政治の対応において、「生徒会役員」の本質的な説明はどれですか。",
+        a: "生徒会長（総理大臣）をリーダーとし、イベント運営や予算計画などの生徒会実務を協力して行うチーム（内閣相当）",
+        b: "職員会議において、学校の先生たちの決定事項や校則の修正を生徒に一切知らせずに秘密で処理する組織",
+        c: "各部活動のキャプテンのみが集まり、自分たちの部活の予算を優先的に配分させるために交渉する団体",
+        d: "PTA総会において、保護者と教員の意見対立を、ハッキングなどの不正な手段を用いて強引に調整する組織", ans: "A",
+        exp: "生徒会長（総理大臣）をキャプテンとし、実際の生徒会の仕事を協力して執行する役員グループは、国における「内閣（大臣チーム）」に対応します。"
+      },
+      {
+        id: 175, type: "用語説明",
+        question: "生徒会と政治の対応において、「生徒会費（生徒会予算）」の本質的な説明はどれですか。",
+        a: "学校の先生たちの給料や事務用品を、生徒から集めたお金で補うために国が不当に割り当てる特別資金",
+        b: "生徒全員から公平に集められ、文化祭や委員会などの共有インフラの使い道の計画に充てられる公金（国家予算相当）",
+        c: "個人のアルバイト給料と同じ完全なプライベート財産であり、個人の趣味の範囲でのみ使われるお金",
+        d: "テストで100点を取った特定の優秀な生徒に、学校からお祝い金（特権報酬）として直接支給される公的資金", ans: "B",
+        exp: "みんなから集めた会費（税金）を、みんなの便利さのためにどう使うかの計画であるため、国における「国家予算」に対応します。"
+      },
+      {
+        id: 176, type: "用語説明",
+        question: "「少子高齢化」という用語の説明として、最も適切なものはどれですか。",
+        a: "生まれてくる子どもの数が激減し、高齢者の割合が急増し続ける、日本の深刻な人口構造問題",
+        b: "働く若者の数が急激に増えすぎて、仕事が奪われ社会全体の給料が時給1円まで下落する問題",
+        c: "日本国内の学校や病院がすべて無料になり、一切の公的お金や税金が不要になる理想的な社会状況",
+        d: "高齢者が時間とともに全員若返ることで、これまでの社会保障制度（介護年金）が不要になる現象", ans: "A",
+        exp: "少子高齢化は、社会保障システムを支える若い世代（納税者・保険料の担い手）を急減させ、お年寄りの福祉インフラ維持を著しく脅かす現代の最重要社会課題です。"
+      },
+      {
+        id: 177, type: "用語説明",
+        question: "「東京一極集中」という用語の説明として、最も適切なものはどれですか。",
+        a: "仕事、大学、産業、資金、人口などのあらゆる重要機能が、特定の巨大都市（東京など）ばかりに極端に集まる問題",
+        b: "東京がすべての重要機能を地方に分散させ、東京オリンピックなどのインフラ計画をすべて地方へ譲渡すること",
+        c: "日本国内のオフィスの閉鎖処分を進めることで、すべての国民に地方での自給自足の農耕生活を強制する政策",
+        d: "東京を完全に無税の自由貿易特区に切り替え、地方の企業をすべて東京に強制移転させる行政計画", ans: "A",
+        exp: "東京一極集中は、地方の若者流出と過疎化を加速させ、地方経済や地域医療の維持を困難にさせているため、一極集中の是正（地方創生）が急務です。"
+      },
+      {
+        id: 178, type: "用語説明",
+        question: "「地域活性化」という用語の説明として、最も適切なものはどれですか。",
+        a: "地方の人口増加を無理やり防ぐため、住宅やインフラの新規建設を法律で禁止する極端な制限措置",
+        b: "地方企業が儲かりすぎることで、国全体の税金を地方自治体ばかりが不当に独占して溜め込んでいる状況",
+        c: "観光ビジネスプロモーション、特産品の創出、インフラ整備などで、過疎化が進む地方に活気を呼び戻す取り組み",
+        d: "スマホの使用やネットの通信網を地方都市でのみ完全停止し、昔ながらの手書きの手続きに切り替える措置", ans: "C",
+        exp: "地方経済を救い、過疎化を防ぐため、観光振興（観光ビジネス）や地方創生政策によって地方にお金と人を呼び戻す取り組みを「地域活性化」と言います。"
+      },
+      {
+        id: 179, type: "用語説明",
+        question: "防災で用いられる「ハザードマップ」の説明として、最も適切なものはどれですか。",
+        a: "災害発生時、警察やボランティア団体が地域の泥棒を裁判なしでその場で罰するための仮設犯罪マップ",
+        b: "気象庁が発令する警報データをすべて非公開（国家機密）にし、国民の避難の機会を制限する秘密地図",
+        c: "災害（地震、洪水、土砂崩れ等）の被害予測範囲や、安全な避難経路、避難所を示した事前配布の地図",
+        d: "災害の当日にのみ稼働するものであり、国民が自費でスマートフォンに高額で購入しなければならない有料アプリ", ans: "C",
+        exp: "災害（洪水、地震、津波など）による死傷者を最小限に抑えるため、平時から危険区域や避難経路、避難所の位置を住民に提供する地図を「ハザードマップ」と言います。"
+      },
+      {
+        id: 180, type: "用語説明",
+        question: "「公共の福祉」という用語の説明として、最も適切なものはどれですか。",
+        a: "個人の自由や権利をどんな場合であっても100%最優先し、他人の安全や健康を無視することを認める原則",
+        b: "個人の自由を制限しても、社会全体の安全性向上や環境保護など「みんなの共有の安全と利益」を守る原則",
+        c: "企業の利益のみを不当に最大化させるため、労働者の基本的人権をすべて法律で剥奪してよいとする原則",
+        d: "一般の家庭の私有財産や貯金額を、公共事業という名目で、国がいつでも不当に全額没収できるとする原則", ans: "B",
+        exp: "民主主義は個人の自由を尊重しますが、他人の安全や利益（社会全体の幸福）を奪わないよう、共通のルールで一定の制限（左側通行など）を課すことを「公共の福祉」と呼びます。"
+      },
+      {
+        id: 181, type: "用語説明",
+        question: "政治における「予算」という用語の説明として、最も適切なものはどれですか。",
+        a: "大企業が製品の開発価格を自由に決定し、国の関与を受けずに民間内でのみ執行する私的な貯金通帳",
+        b: "国民から集めた税金（公金）を、社会課題解決のためにどのように配分して使うかをあらかじめ定めた計画",
+        c: "前任のリーダーの個人的な趣味や気分で、一切の公的な根拠を持たずに、いつでも自腹で支払えるお金の総額",
+        d: "日本の憲法を変更せずに永久維持することを誓うために、国から毎年支給されるお祝い金の計画書", ans: "B",
+        exp: "政策を実行するには莫大なお金が必要です。公的な財源である税金（公金）の使い道をあらかじめ詳細に計画した財務書を「予算（国家予算など）」と呼びます。"
+      },
+      {
+        id: 182, type: "用語説明",
+        question: "「両院協議会」という用語の説明として、最も適切なものはどれですか。",
+        a: "衆参の意見が一致しなかった場合に、双方の代表が集まり合意点（妥協案）を見出す国会の合同会議システム",
+        b: "内閣総理大臣が不当な政治を行った場合に、すべての行政権を一時的に裁判所長官に引き継がせる司法法廷",
+        c: "予算の使い道を決定する際、地方知事のみが集まり、国からの交付金配分を多数決で強行突破する会議",
+        d: "不適切な行いをした裁判官を、国会議員が裁判員となって辞めさせるために国会内に設置される特別法廷", ans: "A",
+        exp: "二院制をとっているため、衆議院と参議院で決定にズレ（食い違い）が生じた際に、法律を成立へ導くための中ですり合わせ（合意形成）を行う国会の合同組織です。"
+      },
+      {
+        id: 183, type: "用語説明",
+        question: "天皇の「国事行為」の説明として、最も適切なものはどれですか。",
+        a: "内閣総理大臣を自分の気分で自由に選出し、気に入らない法律を拒否して破棄する政治的意思決定権",
+        b: "日本国憲法に定める、象徴としての形式的・儀礼的な行為であり、内閣の助言と承認の下で行う事務手続き",
+        c: "気象庁の災害速報を秘密にしたり、ハッキングなどの不正な手段で独自の世論を操作したりする隠密活動",
+        d: "最高裁判所の判決内容を、天皇独自の漢字や言い回しに変更して最終判決を下すための司法命令権", ans: "B",
+        exp: "天皇は政治的な実権（意思決定権）を持たず（憲法第4条）、成立した法律の「公布」などを、内閣の指示（助言と承認）の通りに事務処理することを「国事行為」と言います。"
+      },
+      {
+        id: 184, type: "用語説明",
+        question: "「連立政権」という用語の説明として、最も適切なものはどれですか。",
+        a: "1つの政党のみが国会のすべての議席を占め、一切の対立政党を禁止して政治を進める権威主義的体制",
+        b: "複数の政党が協力して議会の過半数を確保し、合同で政権（内閣・与党）を組織して国を動かす仕組み",
+        c: "選挙をすべて廃止し、地方知事が勝手にお気に入りのリーダーを指名して国を運営させる臨時体制",
+        d: "与党と野党の多数派が逆転し、国会での話し合いや法律制定プロセスが永久にストップしている状況", ans: "B",
+        exp: "一党で過半数を占められない場合などに、お互いの主要な公約（マニフェスト）を調整し、複数の政党が合同で与党チームとして内閣を維持することを「連立政権」と呼びます。"
+      },
+      {
+        id: 185, type: "用語説明",
+        question: "政治活動における「政策」の説明として、最も適切なものはどれですか。",
+        a: "民間企業が個別の製品価格を引き下げ、自社の利益を優先して自由に競い合うためのビジネスアイデア",
+        b: "社会の課題を具体的に解決するために、予算の配分、法律の整備、制度の変更などを用いて、政治が策定するプラン",
+        c: "台風の日にテレビやネットニュースで「外に出ると危険」と住民に注意を呼びかける一時的な情報提供",
+        d: "一度作られた法律は二度と改正できないという、主権者と政治家の間で結ばれた絶対的な契約の文面", ans: "B",
+        exp: "政策（ポリシー）とは、主権者の意思（選挙や請願）や社会の重要課題を解決するため、政治が法や税金、インフラ制度を用いて編み出す、実行可能で永続的な解決計画です。"
+      },
+      {
+        id: 186, type: "用語説明",
+        question: "「就学支援金（高等学校等就学支援金）」の説明として、最も適切なものはどれですか。",
+        a: "テストで100点などの優秀な成績をとった特定の生徒にのみ、特権として支給される国のボーナスお祝い金",
+        b: "家庭の経済的な事情による教育格差をなくし、高校の授業料負担をカバー（無料化）する国の就学支援制度",
+        c: "将来的に必ず何倍もの利子を上乗せして国に返済しなければならない、強制的な借用型の学費借入れシステム",
+        d: "私立学校の経営をすべて国の直轄国営化に移行させ、一切の自由な教育事業を禁止するための特別補助金", ans: "B",
+        exp: "親の経済状況に関わらず高校へ通い基礎教育を修了できるよう、授業料相当額をカバー（実質無料化）して機会均等を図る国の支援制度を「就学支援金」と言います。"
+      },
+      {
+        id: 187, type: "用語説明",
+        question: "第1回ワークシートにある「子ども食堂」の説明として、最も適切なものはどれですか。",
+        a: "親の調理活動を法律で一切禁止し、すべての未成年に夜間のコンビニ外食のみを強制するルール",
+        b: "経済的格差や親の多忙による子どもの孤立・栄養不足を防ぐため、地域や行政が協力して提供する安価な食事処",
+        c: "学校の義務教育における給食をすべて廃止し、学校の代わりに食事を提供する民間の給食代行レストラン",
+        d: "一般のファミリーレストランなどの飲食業界を衰退させ、すべて国の直轄店にするための経済管理条例", ans: "B",
+        exp: "地域や家族のつながりの希薄化、経済的理由で一人で食事をする子どもたちを救い、健康と安全なコミュニティの居場所を提供する福祉支援活動が「子ども食堂」です。"
+      },
+      {
+        id: 188, type: "用語説明",
+        question: "第1回にある「避難所」の説明として、最も適切なものはどれですか。",
+        a: "大災害発生時、住民が身を守るために一時的に共同生活を送り、安全と物資を確保する公的に指定された場所",
+        b: "台風の当日のみに有料で貸し出され、利用料を支払えない人は一切の立ち入りを拒否される民間のホテル",
+        c: "大災害発生時、気象庁や自治体のハッキングを避けるために秘密裏に移動するための森や地下室の隠れ家",
+        d: "高齢者や特定の裕福な世帯だけを優先して隔離し、一般の住民をすべて屋外で待機させるための防犯施設", ans: "A",
+        exp: "地震や津波、洪水などの非常時に、自宅を失った住民の生命を守り、公的な水や物資を配布して、平穏な環境を一時的に取り戻すための公的な指定場所を「避難所」と言います。"
+      },
+      {
+        id: 189, type: "用語説明",
+        question: "主権者教育で体感する「民主主義」という用語の説明として、最も適切なものはどれですか。",
+        a: "一人の強大で強力な独裁者がすべてのルールを決め、国民（メンバー）には一切の話し合いや質問を禁止する制度",
+        b: "共同体の主権をそのメンバー全員が持ち、お互いの多様な意見を聞き（熟議）、合意を形成してルールを決める制度",
+        c: "学校の校則や国の法律を一切変更せず、過去に作られたルールにいかなる欠陥があっても我慢し従う制度",
+        d: "自分勝手な暴力やハッキング、ハラスメントをルールとして認め、無法地帯の自由勝手な社会を構築する制度", ans: "B",
+        exp: "民主主義（デモクラシー）は、全員が主役（主権者）であり、対立する意見を「言葉（対話）」ですり合わせ、お互いの妥協案を作り（少数意見の尊重）、合意を作る平和的な運営システムです。"
+      },
+      {
+        id: 190, type: "用語説明",
+        question: "主権者教育の究極の目的である「主権者意識」という用語の説明はどれですか。",
+        a: "社会のルールは強そうなリーダーや他人が勝手に決めるものであり、自分には関係ないと無関心になる諦めの意識",
+        b: "自分たちの社会のルールや未来は、自分たちの手（投票や意見の発信、話し合い）で選択してつくるという能動的な当事者意識",
+        c: "自分と異なる意見や異なる政党（右・中・左）を社会の敵とみなして徹底排除し、暴力的手段を賛美する過激な意識",
+        d: "甘い耳障りの良いことだけを約束してくれる政治家に、財源やデメリットを考慮せずに盲目的に一票を投じる無責任な意識", ans: "B",
+        exp: "主権者教育は、自分を「社会の主役（当事者）」として、一票の重みとマニフェストを自分で比較し、自分の頭で納得のいく選択（投票）を行う責任ある行動力（主権者意識）を育みます。"
+      },
+      {
+        id: 191, type: "用語説明",
+        question: "第3回などで政治家がアピールする「景気対策」の説明として、最も適切なものはどれですか。",
+        a: "お金を無限に刷りまくって配り、お札の価値を紙くずにしてハイパーインフレーションを起こす活動",
+        b: "減税やインフラ整備、雇用創出予算の投入によって、社会のお金のめぐりを良くし、生活を豊かにする活動",
+        c: "すべての民間企業の営業を明日から強制的に閉鎖させ、物価高を物理的に止めるための行政管理手続き",
+        d: "お年寄りへの年金支給額を3倍にする代わりに、現役世代の時給をゼロにするための極端な予算配分", ans: "B",
+        exp: "景気対策とは、企業活動を支援し、減税や予算投入などで働く場所を増やして国民の手取りを増やし、経済全体の潤いを良くするための政治の取り組みです。"
+      },
+      {
+        id: 192, type: "用語説明",
+        question: "第3回や第7回に登場する、国の安全や伝統を守るための「防衛体制（安全保障）」の説明はどれですか。",
+        a: "すべての外交的な話し合いを全面禁止し、他国に対して宣戦布告のみを送り続けて緊張を高める活動",
+        b: "他国からの侵略や大災害から国民の平和な生活・領土・主権を守るための、自衛隊や同盟等の事前防衛対策",
+        c: "日本のすべての公的予算（教育や医療）を廃止し、予算の100%を戦闘用の武器購入のみに投入する活動",
+        d: "すべての自衛活動や警察活動を廃止し、外国からの侵略に対しても一切の抵抗を拒否するルール変更", ans: "B",
+        exp: "平和な社会を維持し、国民の生命を守るために、他国との外交関係、同盟の構築、自衛権の維持や防災準備などを総合的に機能させる政治的守りを「安全保障（防衛）」と呼びます。"
+      },
+      {
+        id: 193, type: "用語説明",
+        question: "第3回や第8回で「日本維新の会」などが掲げる「身を切る改革（行政改革）」の説明はどれですか。",
+        a: "国民から集めた税金を一切使わず、政治家自身の自腹（ポケットマネー）のみで国の全予算をまかなうルール",
+        b: "政治家や公務員、行政機構自らの無駄な人員や報酬、活動費を削り、効率的でスリムな政治運営にする改革",
+        c: "すべての公的インフラ（水道電気道路）を直ちに全廃し、国民一人ひとりに完全な自己責任での自活を求めること",
+        d: "テストで優秀な成績をとった特定の生徒にのみ、学校の職員会議への出席と全校則の書き換え権限を与えること", ans: "B",
+        exp: "「身を切る改革」とは、税金を使う立場である政治家や行政自らの無駄をまず削る（改革する）ことで、浮いた予算を教育や子育て支援に回すという保守（右）的アプローチです。"
+      },
+      {
+        id: 194, type: "用語説明",
+        question: "第3回で「参政党」などがアピールする「食料自給率」という用語の説明はどれですか。",
+        a: "日本国内で消費される食料のうち、どれだけを海外からの輸入に一切頼らず、国内の農業で作れているかの割合",
+        b: "国民全員が個人のキッチンでの調理活動を禁止され、すべて直轄の子ども食堂での外食のみで自活する割合",
+        c: "日本の食料をすべて外国の会社に売り払い、国内のスーパーでの食品の販売を完全になくしてしまうための割合",
+        d: "地球環境保護のため、プラスチック製レジ袋を製造したすべての人をその場で厳しく有罪処分にする割合", ans: "A",
+        exp: "世界的なパンデミックや戦争によって物流がストップした際、自国だけで食べるものをどれだけ確保できるかの防衛的指標（食料自給率）をアピールする方針です。"
+      },
+      {
+        id: 195, type: "用語説明",
+        question: "第1回や第7回で学ぶ、私たちの生活を守るための「社会保障制度」の説明として、最も適切なものはどれですか。",
+        a: "お金を稼いでいないお年寄りや弱者を自己責任として放っておき、治安活動をすべて民間企業に投げること",
+        b: "病気、介護、お年寄りの生活、子育てなどに対して、みんなの保険料と税金（公金）を使って生活を支え合う仕組み",
+        c: "大企業の利益のみを優遇し、労働者の時給を時給1円まで不当に引き下げるための法律上の強制基準",
+        d: "すべての民間商店の営業を法律で禁止し、すべての食品や衣服を国の配給所だけで配布する共産主義的制度", ans: "B",
+        exp: "人生のさまざまな危機（病気、ケガ、失業、高齢、子育て）に対して、みんなで出し合ったお金を用いて生活の最低限を公的に保障し、安心を提供するセーフティネット（社会保障）です。"
+      },
+      {
+        id: 196, type: "用語説明",
+        question: "憲法が定める「義務」という用語の説明として、最も適切なものはどれですか。",
+        a: "国民が政治や法律に対して疑問を一切持たず、ただ諦めて言われるがままに従い続けなければならない特権",
+        b: "国民が社会全体の安全（公共の福祉）や平穏、納税など、社会の秩序を守るために果たさなければならない責任",
+        c: "授業中にスマホや動画を勝手に楽しんでサボることを、学校が公式に認めなければならないとする権利",
+        d: "一度成立した法律をいかなる理由があっても二度と廃止・改正してはならないとする、国会と国民の契約", ans: "B",
+        exp: "社会で公平で安全に過ごすために、主権者は単に「権利（していいこと）」を主張するだけでなく、お互いにルール（義務・納税・教育の保障など）を果たすことが求められます。"
+      },
+      {
+        id: 197, type: "用語説明",
+        question: "ゴミの分別や自転車ルールなどにおいて、地方自治体が地域の実情に合わせて独自に決定する公的ルール（条例）の説明はどれですか。",
+        a: "国会を経ずに、特定の都道府県や市区町村が、その地域で守るべきルールとして議会で制定する法的な規則",
+        b: "一般のファミリーレストランなどの飲食業界を衰退させ、すべて国の完全な国営店にするための経済管理規則",
+        c: "気象庁の災害予報や台風警報をすべて非公開にし、国民に一切の情報を遮断するための秘密命令",
+        d: "テストで100点を取った優秀な特定の住民にのみ、地域内のすべての道路や公園を自費で民営化させる特別権利", ans: "A",
+        exp: "国全体を一律に縛る「国の法律」とは別に、地域（都道府県や市区町村）のことはその住民自身が決める「地方自治」に基づき、地方議会が定める独自ルールを「条例」と呼びます。"
+      },
+      {
+        id: 198, type: "用語説明",
+        question: "第4回の政治フローや第5回の意思決定において、国民の「最新の意思（世論）」の説明として、最も適切なものはどれですか。",
+        a: "政治家や首相がテレビのニュースや情報統制を通じて、国民に無理やり植え付ける一方的な思想",
+        b: "社会のさまざまな問題に対して、主権者である一般の多くの国民が抱いている共通の意見や不満、考え方の総意",
+        c: "一部の声の大きくて怒鳴り声の強い過激なグループのみが、SNSや動画サイトで不当に拡散している暴力的要求",
+        d: "過去に決められた校則や法律を、実情に合わなくなっても一切の疑問を持たずにそのまま我慢し続ける諦めの意思", ans: "B",
+        exp: "国民主権国家では、この国民全体の共通の考え方である「世論（最新の民意）」を政治家や国会が無視して暴走すると、次の選挙で確実に落選（リセット）するため、極めて強力な監視パワーを持ちます。"
+      },
+      {
+        id: 199, type: "用語説明",
+        question: "主権者としての話し合いにおいて重要とされる「熟議」という用語の説明として、最も適切なものはどれですか。",
+        a: "多数派が勝ったから終わりと、すぐに決を強行して反対派（少数派）の言い分を一切考慮しないこと",
+        b: "十分な時間と客観的なデータ、多様な視点を用い、お互いに歩み寄る妥協点（合意）を慎重に話し合うプロセス",
+        c: "自分たちの意見が通るまで、国会のすべての出入り口を力ずくで占拠し、暴力でルールを強制しようとすること",
+        d: "複雑な社会課題はすべて他人に任せてしまい、自分たちは一切の関心を失いすべての決定を棄権すること", ans: "B",
+        exp: "「熟議」とは、ただ声を荒げてケンカをするのではなく、お互いのメリット・デメリットを冷静に洗い出し（批判的思考）、全員が納得できる最も良いルールへと改良する質の高い対話プロセスです。"
+      },
+      {
+        id: 200, type: "用語説明",
+        question: "観光ビジネスコースにおいて地方創生や活性化のために必要とされる「観光振興」の説明はどれですか。",
+        a: "地方自治体の観光予算をゼロにし、一切のプロモーション活動やバリアフリー法整備を中止する制限措置",
+        b: "インバウンド誘致やプロモーション、移動インフラ整備を政治や自治体が支援して、地方にお金と人を呼び戻す活動",
+        c: "国内外を問わず、すべての観光客に対して、観光地の資源を保護するために、一切の立ち入りを永久に禁止する政策",
+        d: "テストで100点を取った特定の生徒を、観光ビジネスの専属リーダーに指名して、すべての手続きをサボらせること", ans: "B",
+        exp: "「観光振興」は、地方の豊かな資源を活用して国内外から人を呼び寄せ（インバウンドなど）、過疎化に悩む地方にお金と雇用のめぐり（地域活性化）をもたらす、観光ビジネスコースの核となる政策アプローチです。"
+      }
+    ];
+
+    // アプリ状態管理
+    let state = {
+      currentMode: 'home', // 'home', 'quiz', 'result'
+      quizType: 'practice', // 'practice', 'test', 'weak'
+      activeQuestions: [], // 現在進行中の問題セット
+      currentIndex: 0,
+      userAnswers: [], // { questionId, selected, isCorrect, isTimeout, timeLeft }
+      testCount: 20, // テストモード時は20問固定
+      timerInterval: null,
+      timeLeft: 30,
+      weakQuestions: new Set(), // 苦手問題ID
+      history: {
+        times: 0,
+        totalAnswers: 0,
+        correctAnswers: 0
+      }
+    };
+
+    // 初期化処理
+    window.addEventListener('DOMContentLoaded', () => {
+      loadLocalStorage();
+      renderHome();
+      initTheme();
+    });
+
+    // LocalStorageからの読み込み
+    function loadLocalStorage() {
+      const savedWeak = localStorage.getItem('shuken_weak_questions_v2');
+      if (savedWeak) {
+        try {
+          const arr = JSON.parse(savedWeak);
+          state.weakQuestions = new Set(arr);
+        } catch(e) {
+          state.weakQuestions = new Set();
+        }
+      }
+      
+      const savedHistory = localStorage.getItem('shuken_stats_v2');
+      if (savedHistory) {
+        try {
+          state.history = JSON.parse(savedHistory);
+        } catch(e) {
+          state.history = { times: 0, totalAnswers: 0, correctAnswers: 0 };
+        }
+      }
+    }
+
+    // LocalStorageへの保存
+    function saveWeakList() {
+      const arr = Array.from(state.weakQuestions);
+      localStorage.setItem('shuken_weak_questions_v2', JSON.stringify(arr));
+    }
+
+    function saveHistoryToStorage() {
+      localStorage.setItem('shuken_stats_v2', JSON.stringify(state.history));
+    }
+
+    // 学習データクリア
+    function clearLocalStorage() {
+      if (confirm('すべての学習履歴、総解答数、苦手問題リストを消去します。よろしいですか？')) {
+        localStorage.removeItem('shuken_weak_questions_v2');
+        localStorage.removeItem('shuken_stats_v2');
+        state.weakQuestions = new Set();
+        state.history = { times: 0, totalAnswers: 0, correctAnswers: 0 };
+        renderHome();
+      }
+    }
+
+    // テーマ設定
+    function initTheme() {
+      const themeToggleBtn = document.getElementById('theme-toggle');
+      const savedTheme = localStorage.getItem('shuken_theme');
+      if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+
+      themeToggleBtn.addEventListener('click', () => {
+        if (document.documentElement.classList.contains('dark')) {
+          document.documentElement.classList.remove('dark');
+          localStorage.setItem('shuken_theme', 'light');
+        } else {
+          document.documentElement.classList.add('dark');
+          localStorage.setItem('shuken_theme', 'dark');
+        }
+      });
+    }
+
+    // ホーム画面のステータス描画
+    function renderHome() {
+      const totalAnswers = state.history.totalAnswers;
+      const totalCorrect = state.history.correctAnswers;
+      const accuracy = totalAnswers > 0 ? Math.round((totalCorrect / totalAnswers) * 100) : 0;
+
+      document.getElementById('stat-total-plays').textContent = state.history.times;
+      document.getElementById('stat-total-answers').textContent = totalAnswers;
+      document.getElementById('stat-accuracy').textContent = accuracy;
+      document.getElementById('stat-weak-count').textContent = state.weakQuestions.size;
+      document.getElementById('weak-box-count').textContent = `${state.weakQuestions.size}問`;
+
+      const btnWeak = document.getElementById('btn-start-weak');
+      if (state.weakQuestions.size === 0) {
+        btnWeak.disabled = true;
+        btnWeak.className = 'w-full bg-slate-200 dark:bg-slate-700 text-slate-400 dark:text-slate-500 font-bold py-3.5 px-4 rounded-xl cursor-not-allowed flex items-center justify-center gap-2';
+      } else {
+        btnWeak.disabled = false;
+        btnWeak.className = 'w-full bg-rose-500 hover:bg-rose-400 text-white font-bold py-3.5 px-4 rounded-xl transition-all shadow-sm flex items-center justify-center gap-2';
+      }
+    }
+
+    // シャッフル関数 (Fisher-Yates)
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    // モード切り替え
+    function changeView(viewName) {
+      document.getElementById('view-home').classList.add('hidden');
+      document.getElementById('view-quiz').classList.add('hidden');
+      document.getElementById('view-result').classList.add('hidden');
+
+      document.getElementById(`view-${viewName}`).classList.remove('hidden');
+      state.currentMode = viewName;
+    }
+
+    // 学習モードの開始 (全問題からランダム・混在して出題、セッション中の重複なし)
+    function startPractice() {
+      // 4種類すべての問題データを結合して完全シャッフルする
+      let allQuestions = [
+        ...multipleChoice,
+        ...trueFalse,
+        ...fillBlank,
+        ...termExplanation
+      ];
+
+      shuffleArray(allQuestions);
+      
+      state.quizType = 'practice';
+      state.activeQuestions = allQuestions;
+      state.currentIndex = 0;
+      state.userAnswers = [];
+
+      initQuizUI();
+      changeView('quiz');
+      showQuestion();
+    }
+
+    // テストモード開始 (全問題からランダムに20問を重複なく選出して出題)
+    function startTest() {
+      let allQuestions = [
+        ...multipleChoice,
+        ...trueFalse,
+        ...fillBlank,
+        ...termExplanation
+      ];
+      
+      shuffleArray(allQuestions);
+
+      state.quizType = 'test';
+      state.activeQuestions = allQuestions.slice(0, state.testCount);
+      state.currentIndex = 0;
+      state.userAnswers = [];
+
+      initQuizUI();
+      changeView('quiz');
+      showQuestion();
+    }
+
+    // 苦手克服モード開始 (苦手リストにある問題のみシャッフルして復習)
+    function startWeakMode() {
+      if (state.weakQuestions.size === 0) return;
+
+      const listIds = Array.from(state.weakQuestions);
+      let allQuestions = [
+        ...multipleChoice,
+        ...trueFalse,
+        ...fillBlank,
+        ...termExplanation
+      ];
+      let filtered = allQuestions.filter(q => listIds.includes(q.id));
+      shuffleArray(filtered);
+
+      state.quizType = 'weak';
+      state.activeQuestions = filtered;
+      state.currentIndex = 0;
+      state.userAnswers = [];
+
+      initQuizUI();
+      changeView('quiz');
+      showQuestion();
+    }
+
+    // クイズ用共通UIの設定
+    function initQuizUI() {
+      const badge = document.getElementById('quiz-mode-badge');
+      const timerWrapper = document.getElementById('test-timer-wrapper');
+      const hint = document.getElementById('test-mode-hint');
+
+      if (state.quizType === 'practice') {
+        badge.textContent = '学習モード';
+        badge.className = 'px-3 py-1 text-xs font-black rounded-lg uppercase tracking-wider bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400';
+        timerWrapper.classList.add('hidden');
+        hint.classList.add('hidden');
+        document.getElementById('btn-toggle-weak-direct').classList.remove('hidden');
+      } else if (state.quizType === 'test') {
+        badge.textContent = 'テストモード';
+        badge.className = 'px-3 py-1 text-xs font-black rounded-lg uppercase tracking-wider bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400';
+        timerWrapper.classList.remove('hidden');
+        hint.classList.remove('hidden');
+        document.getElementById('btn-toggle-weak-direct').classList.add('hidden');
+      } else if (state.quizType === 'weak') {
+        badge.textContent = '苦手克服復習';
+        badge.className = 'px-3 py-1 text-xs font-black rounded-lg uppercase tracking-wider bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400';
+        timerWrapper.classList.add('hidden');
+        hint.classList.add('hidden');
+        document.getElementById('btn-toggle-weak-direct').classList.remove('hidden');
+      }
+
+      document.getElementById('quiz-total-num').textContent = state.activeQuestions.length;
+    }
+
+    // 問題を1問表示する (全形式を共通のカードに最適化して描画)
+    function showQuestion() {
+      clearInterval(state.timerInterval);
+
+      const q = state.activeQuestions[state.currentIndex];
+      
+      const currentNum = state.currentIndex + 1;
+      const totalNum = state.activeQuestions.length;
+      document.getElementById('quiz-current-num').textContent = currentNum;
+      
+      const percent = Math.round((currentNum / totalNum) * 100);
+      document.getElementById('quiz-progress-percent').textContent = `${percent}%`;
+      document.getElementById('quiz-progress-bar').style.width = `${percent}%`;
+
+      document.getElementById('question-index').textContent = `Q${state.currentIndex + 1}`;
+      
+      const typeBadge = document.getElementById('question-type-badge');
+      typeBadge.textContent = q.type;
+      if (q.type === '四択') {
+        typeBadge.className = 'px-2.5 py-1 text-[10px] font-black rounded-md uppercase tracking-wider text-blue-600 bg-blue-50 dark:text-blue-400 dark:bg-blue-950/40';
+      } else if (q.type === '○×') {
+        typeBadge.className = 'px-2.5 py-1 text-[10px] font-black rounded-md uppercase tracking-wider text-amber-600 bg-amber-50 dark:text-amber-400 dark:bg-amber-950/40';
+      } else if (q.type === '穴埋め') {
+        typeBadge.className = 'px-2.5 py-1 text-[10px] font-black rounded-md uppercase tracking-wider text-purple-600 bg-purple-50 dark:text-purple-400 dark:bg-purple-950/40';
+      } else {
+        typeBadge.className = 'px-2.5 py-1 text-[10px] font-black rounded-md uppercase tracking-wider text-teal-600 bg-teal-50 dark:text-teal-400 dark:bg-teal-950/40';
+      }
+
+      document.getElementById('question-text').textContent = q.question;
+
+      updateWeakButtonUI(q.id);
+
+      const choicesContainer = document.getElementById('choices-container');
+      choicesContainer.innerHTML = '';
+
+      const options = (q.type === '○×') ? ['A', 'B'] : ['A', 'B', 'C', 'D'];
+      
+      options.forEach(opt => {
+        let text = '';
+        if (opt === 'A') text = q.a;
+        if (opt === 'B') text = q.b;
+        if (opt === 'C') text = q.c;
+        if (opt === 'D') text = q.d;
+
+        const button = document.createElement('button');
+        button.id = `choice-btn-${opt}`;
+        button.onclick = () => selectChoice(opt);
+        button.className = 'choice-item flex items-center text-left bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700/80 hover:border-indigo-400 dark:hover:border-indigo-500 rounded-2xl px-5 py-4 text-lg font-bold transition-all hover:translate-x-1 duration-200 group';
+        
+        button.innerHTML = `
+          <span class="choice-letter flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-lg bg-slate-200 dark:bg-slate-800 text-sm font-black text-slate-500 dark:text-slate-400 group-hover:bg-indigo-600 group-hover:text-white transition-all mr-4">${opt}</span>
+          <span class="text-slate-700 dark:text-slate-200 group-hover:text-slate-900 dark:group-hover:text-white leading-relaxed flex-1">${text}</span>
+          <span class="choice-status ml-2 hidden"></span>
+        `;
+        choicesContainer.appendChild(button);
+      });
+
+      document.getElementById('explanation-panel').classList.add('hidden');
+      document.getElementById('btn-next-question').classList.add('hidden');
+
+      if (state.quizType === 'test') {
+        startTimer();
+      }
+    }
+
+    // 苦手ボタン表示
+    function updateWeakButtonUI(id) {
+      const btn = document.getElementById('btn-toggle-weak-direct');
+      const text = document.getElementById('weak-direct-text');
+      if (!btn || !text) return;
+      
+      if (state.weakQuestions.has(id)) {
+        btn.classList.add('text-rose-500');
+        btn.classList.remove('text-slate-400');
+        text.textContent = '苦手削除';
+      } else {
+        btn.classList.remove('text-rose-500');
+        btn.classList.add('text-slate-400');
+        text.textContent = '苦手追加';
+      }
+    }
+
+    // 苦手登録
+    function toggleWeakDirect() {
+      const q = state.activeQuestions[state.currentIndex];
+      if (state.weakQuestions.has(q.id)) {
+        state.weakQuestions.delete(q.id);
+      } else {
+        state.weakQuestions.add(q.id);
+      }
+      saveWeakList();
+      updateWeakButtonUI(q.id);
+    }
+
+    // タイム監視 (テストモード用)
+    function startTimer() {
+      state.timeLeft = 30;
+      document.getElementById('timer-text').textContent = '30s';
+      document.getElementById('timer-progress-bar').style.width = '100%';
+      document.getElementById('timer-progress-bar').className = 'h-full bg-emerald-500';
+
+      state.timerInterval = setInterval(() => {
+        state.timeLeft--;
+        document.getElementById('timer-text').textContent = `${state.timeLeft}s`;
+        
+        const percent = (state.timeLeft / 30) * 100;
+        const progress = document.getElementById('timer-progress-bar');
+        progress.style.width = `${percent}%`;
+
+        if (state.timeLeft <= 10) {
+          progress.className = 'h-full bg-rose-500';
+          document.getElementById('timer-text').className = 'text-rose-600 dark:text-rose-400 font-extrabold text-sm min-w-[2.5rem] text-right pulse-urgent';
+        } else {
+          progress.className = 'h-full bg-emerald-500';
+          document.getElementById('timer-text').className = 'text-slate-600 dark:text-slate-300 font-extrabold text-sm min-w-[2.5rem] text-right';
+        }
+
+        if (state.timeLeft <= 0) {
+          clearInterval(state.timerInterval);
+          handleTimeout();
+        }
+      }, 1000);
+    }
+
+    // 時間切れ時処理
+    function handleTimeout() {
+      state.userAnswers.push({
+        questionId: state.activeQuestions[state.currentIndex].id,
+        selected: null,
+        isCorrect: false,
+        isTimeout: true,
+        timeLeft: 0
+      });
+
+      const currentQuestion = state.activeQuestions[state.currentIndex];
+      state.weakQuestions.add(currentQuestion.id);
+      saveWeakList();
+
+      goToNextStep();
+    }
+
+    // 選択決定
+    function selectChoice(selectedLetter) {
+      clearInterval(state.timerInterval);
+      const q = state.activeQuestions[state.currentIndex];
+      const isCorrect = (selectedLetter === q.ans);
+
+      disableChoices();
+
+      if (state.quizType === 'test') {
+        // テストモード時は解答解説は表示せずそのまま自動的に進行
+        state.userAnswers.push({
+          questionId: q.id,
+          selected: selectedLetter,
+          isCorrect: isCorrect,
+          isTimeout: false,
+          timeLeft: state.timeLeft
+        });
+
+        if (!isCorrect) {
+          state.weakQuestions.add(q.id);
+          saveWeakList();
+        }
+
+        setTimeout(() => {
+          goToNextStep();
+        }, 300);
+
+      } else {
+        // 学習モード・苦手克服は即時に解説表示
+        const btn = document.getElementById(`choice-btn-${selectedLetter}`);
+        const letterSpan = btn.querySelector('.choice-letter');
+        const statusSpan = btn.querySelector('.choice-status');
+
+        if (isCorrect) {
+          btn.className = 'choice-item flex items-center text-left bg-emerald-50 dark:bg-emerald-950/20 border-2 border-emerald-500 rounded-2xl px-5 py-4 text-lg font-bold transition-all';
+          letterSpan.className = 'choice-letter flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-lg bg-emerald-500 text-sm font-black text-white mr-4';
+          statusSpan.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-6 h-6 text-emerald-500">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+            </svg>
+          `;
+          statusSpan.classList.remove('hidden');
+
+          if (state.quizType === 'weak') {
+            state.weakQuestions.delete(q.id);
+            saveWeakList();
+          }
+        } else {
+          btn.className = 'choice-item flex items-center text-left bg-rose-50 dark:bg-rose-950/20 border-2 border-rose-500 rounded-2xl px-5 py-4 text-lg font-bold transition-all';
+          letterSpan.className = 'choice-letter flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-lg bg-rose-500 text-sm font-black text-white mr-4';
+          statusSpan.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-6 h-6 text-rose-500">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          `;
+          statusSpan.classList.remove('hidden');
+
+          const correctBtn = document.getElementById(`choice-btn-${q.ans}`);
+          if (correctBtn) {
+            correctBtn.className = 'choice-item flex items-center text-left bg-slate-50 dark:bg-slate-900 border-2 border-emerald-500/50 rounded-2xl px-5 py-4 text-lg font-bold transition-all';
+            correctBtn.querySelector('.choice-letter').className = 'choice-letter flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-lg bg-emerald-500 text-sm font-black text-white mr-4';
+          }
+
+          state.weakQuestions.add(q.id);
+          saveWeakList();
+        }
+
+        updateWeakButtonUI(q.id);
+
+        state.userAnswers.push({
+          questionId: q.id,
+          selected: selectedLetter,
+          isCorrect: isCorrect,
+          isTimeout: false,
+          timeLeft: 30
+        });
+
+        showExplanation(isCorrect, q);
+      }
+    }
+
+    // ボタン無効化
+    function disableChoices() {
+      document.querySelectorAll('.choice-item').forEach(button => {
+        button.disabled = true;
+        button.classList.add('cursor-default');
+        button.classList.remove('hover:border-indigo-400', 'hover:translate-x-1');
+      });
+    }
+
+    // 解説描画
+    function showExplanation(isCorrect, q) {
+      const panel = document.getElementById('explanation-panel');
+      const icon = document.getElementById('judge-icon');
+      const title = document.getElementById('judge-title');
+      const correctText = document.getElementById('correct-answer-text');
+      const expText = document.getElementById('explanation-text');
+
+      panel.classList.remove('hidden');
+
+      if (isCorrect) {
+        panel.className = 'rounded-2xl border border-emerald-100 dark:border-emerald-950 bg-emerald-50/20 dark:bg-emerald-950/10 p-5 space-y-3';
+        icon.className = 'p-1 rounded-full text-white bg-emerald-500';
+        icon.innerHTML = `
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-4 h-4">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+          </svg>
+        `;
+        title.textContent = '正解です！';
+        title.className = 'text-base font-black text-emerald-600 dark:text-emerald-400';
+      } else {
+        panel.className = 'rounded-2xl border border-rose-100 dark:border-rose-950 bg-rose-50/20 dark:bg-rose-950/10 p-5 space-y-3';
+        icon.className = 'p-1 rounded-full text-white bg-rose-500';
+        icon.innerHTML = `
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-4 h-4">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        `;
+        title.textContent = '不正解です';
+        title.className = 'text-base font-black text-rose-500';
+      }
+
+      let correctStr = '';
+      if (q.ans === 'A') correctStr = q.a;
+      if (q.ans === 'B') correctStr = q.b;
+      if (q.ans === 'C') correctStr = q.c;
+      if (q.ans === 'D') correctStr = q.d;
+
+      correctText.textContent = `${q.ans}: ${correctStr}`;
+      expText.textContent = q.exp;
+
+      document.getElementById('btn-next-question').classList.remove('hidden');
+    }
+
+    function goToNextStep() {
+      if (state.currentIndex + 1 < state.activeQuestions.length) {
+        state.currentIndex++;
+        showQuestion();
+      } else {
+        finishQuiz();
+      }
+    }
+
+    function nextQuestion() {
+      goToNextStep();
+    }
+
+    function confirmExit() {
+      document.getElementById('dialog-overlay').classList.remove('hidden');
+    }
+
+    function closeExitDialog() {
+      document.getElementById('dialog-overlay').classList.add('hidden');
+    }
+
+    function exitQuiz() {
+      clearInterval(state.timerInterval);
+      closeExitDialog();
+      showHome();
+    }
+
+    function showHome() {
+      changeView('home');
+      renderHome();
+    }
+
+    function finishQuiz() {
+      clearInterval(state.timerInterval);
+
+      const total = state.activeQuestions.length;
+      let correct = 0;
+      let timeouts = 0;
+
+      state.userAnswers.forEach(ans => {
+        if (ans.isCorrect) correct++;
+        if (ans.isTimeout) timeouts++;
+      });
+
+      const accuracy = Math.round((correct / total) * 100);
+
+      // 学習履歴のLocalStorage保存
+      state.history.times += 1;
+      state.history.totalAnswers += total;
+      state.history.correctAnswers += correct;
+      saveHistoryToStorage();
+
+      showResult(correct, total, timeouts, accuracy);
+    }
+
+    // 評価基準に完全対応したリザルト描画
+    function showResult(correct, total, timeouts, accuracy) {
+      changeView('result');
+
+      document.getElementById('result-score').textContent = `${correct} / ${total}`;
+      document.getElementById('result-timeouts').textContent = timeouts;
+      document.getElementById('result-percent-text').textContent = `${accuracy}%`;
+
+      // 得点に応じた評価基準判定
+      let rank = '再挑戦';
+      let evalText = '59点以下：不合格です。ワークシートを復習してもう一度チャレンジしましょう！';
+
+      if (accuracy >= 90) {
+        rank = 'S';
+        evalText = '90～100点：素晴らしい！本番の試験でも確実に満点S評価が狙える圧倒的な知識レベルです。';
+        startConfetti();
+      } else if (accuracy >= 80) {
+        rank = 'A';
+        evalText = '80～89点：優秀な成績です！観光ビジネスコースの学びがしっかり定着しています。';
+      } else if (accuracy >= 70) {
+        rank = 'B';
+        evalText = '70～79点：平均点クリア！合格水準ですが、間違えた箇所を復習してさらに得点を伸ばしましょう。';
+      } else if (accuracy >= 60) {
+        rank = 'C';
+        evalText = '60～69点：合格ギリギリです！間違えた問題や苦手リストの復習が必須となります。';
+      }
+
+      document.getElementById('result-rank').textContent = rank;
+      document.getElementById('result-eval-text').textContent = evalText;
+
+      const circle = document.getElementById('result-circle-progress');
+      const r = 76;
+      const circumference = 2 * Math.PI * r; 
+      const strokeDashoffset = circumference - (accuracy / 100) * circumference;
+      circle.style.strokeDashoffset = strokeDashoffset;
+
+      const detailsContainer = document.getElementById('result-details-container');
+      detailsContainer.innerHTML = '';
+
+      state.activeQuestions.forEach((q, idx) => {
+        const uAns = state.userAnswers[idx] || { selected: null, isCorrect: false, isTimeout: true };
+        
+        const card = document.createElement('div');
+        card.className = 'pt-4';
+
+        let correctStr = '';
+        if (q.ans === 'A') correctStr = q.a;
+        if (q.ans === 'B') correctStr = q.b;
+        if (q.ans === 'C') correctStr = q.c;
+        if (q.ans === 'D') correctStr = q.d;
+
+        let userStr = '未回答（時間切れ）';
+        if (uAns.selected) {
+          if (uAns.selected === 'A') userStr = `A: ${q.a}`;
+          if (uAns.selected === 'B') userStr = `B: ${q.b}`;
+          if (uAns.selected === 'C') userStr = `C: ${q.c}`;
+          if (uAns.selected === 'D') userStr = `D: ${q.d}`;
+        }
+
+        const judgeBadge = uAns.isCorrect 
+          ? `<span class="px-2.5 py-0.5 text-xs font-bold rounded-md bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400">正解</span>`
+          : `<span class="px-2.5 py-0.5 text-xs font-bold rounded-md bg-rose-50 text-rose-500 dark:bg-rose-950/40">不正解</span>`;
+
+        const weakCheckboxClass = state.weakQuestions.has(q.id) ? 'text-rose-500' : 'text-slate-400';
+        const weakText = state.weakQuestions.has(q.id) ? '苦手登録済' : '苦手追加';
+
+        card.innerHTML = `
+          <div class="flex items-start justify-between gap-4 mb-2">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-black text-slate-500 bg-slate-100 dark:bg-slate-700 px-2 py-0.5 rounded-md">Q${idx + 1}</span>
+              ${judgeBadge}
+            </div>
+            <button onclick="toggleWeakForResult(${q.id}, this)" class="text-xs flex items-center gap-1 font-bold ${weakCheckboxClass} hover:text-rose-500 transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+              </svg>
+              <span>${weakText}</span>
+            </button>
+          </div>
+          <p class="text-base font-bold text-slate-800 dark:text-slate-100 mb-3 leading-relaxed">${q.question}</p>
+          
+          <div class="grid md:grid-cols-2 gap-2 text-xs font-semibold mb-3">
+            <div class="bg-slate-50 dark:bg-slate-900/50 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
+              <span class="text-slate-400">あなたの回答:</span>
+              <p class="mt-1 font-bold ${uAns.isCorrect ? 'text-emerald-500' : 'text-rose-500'}">${userStr}</p>
+            </div>
+            <div class="bg-slate-50 dark:bg-slate-900/50 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
+              <span class="text-slate-400">正しい解答:</span>
+              <p class="mt-1 font-bold text-indigo-600 dark:text-indigo-400">${q.ans}: ${correctStr}</p>
+            </div>
+          </div>
+
+          <details class="group border border-slate-100 dark:border-slate-800 rounded-xl overflow-hidden mb-4 bg-slate-50/30 dark:bg-slate-900/10">
+            <summary class="flex justify-between items-center font-bold text-xs p-3 cursor-pointer text-slate-500 select-none hover:bg-slate-50 dark:hover:bg-slate-800 transition-all">
+              <span>詳細解説を見る</span>
+              <span class="transition-transform duration-200 group-open:rotate-180">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                </svg>
+              </span>
+            </summary>
+            <div class="p-4 border-t border-slate-100 dark:border-slate-800 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+              ${q.exp}
+            </div>
+          </details>
+        `;
+        detailsContainer.appendChild(card);
+      });
+    }
+
+    function toggleWeakForResult(id, btnElement) {
+      const span = btnElement.querySelector('span');
+      if (state.weakQuestions.has(id)) {
+        state.weakQuestions.delete(id);
+        btnElement.className = 'text-xs flex items-center gap-1 font-bold text-slate-400 hover:text-rose-500 transition-colors';
+        span.textContent = '苦手追加';
+      } else {
+        state.weakQuestions.add(id);
+        btnElement.className = 'text-xs flex items-center gap-1 font-bold text-rose-500 hover:text-rose-500 transition-colors';
+        span.textContent = '苦手登録済';
+      }
+      saveWeakList();
+    }
+
+    function retryCurrentQuiz() {
+      shuffleArray(state.activeQuestions);
+      state.currentIndex = 0;
+      state.userAnswers = [];
+      
+      initQuizUI();
+      changeView('quiz');
+      showQuestion();
+    }
+
+    function startConfetti() {
+      const canvas = document.getElementById('confetti-canvas');
+      canvas.classList.remove('hidden');
+      const ctx = canvas.getContext('2d');
+      let animationFrameId;
+
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const colors = ['#4f46e5', '#10b981', '#f59e0b', '#ec4899', '#3b82f6'];
+      const particles = [];
+
+      for (let i = 0; i < 150; i++) {
+        particles.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height - canvas.height,
+          r: Math.random() * 6 + 4,
+          d: Math.random() * canvas.height,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          tilt: Math.random() * 10 - 5,
+          tiltAngleIncremental: Math.random() * 0.07 + 0.02,
+          tiltAngle: 0
+        });
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        particles.forEach((p, idx) => {
+          p.tiltAngle += p.tiltAngleIncremental;
+          p.y += (Math.cos(p.d) + 3 + p.r / 2) / 2;
+          p.x += Math.sin(p.tiltAngle);
+          p.tilt = Math.sin(p.tiltAngle - idx / 3) * 15;
+
+          ctx.beginPath();
+          ctx.lineWidth = p.r;
+          ctx.strokeStyle = p.color;
+          ctx.moveTo(p.x + p.tilt + p.r / 2, p.y);
+          ctx.lineTo(p.x + p.tilt, p.y + p.tilt + p.r / 2);
+          ctx.stroke();
+        });
+
+        updateParticles();
+      }
+
+      function updateParticles() {
+        let remaining = 0;
+        particles.forEach(p => {
+          if (p.y < canvas.height) {
+            remaining++;
+          }
+        });
+
+        if (remaining > 0) {
+          animationFrameId = requestAnimationFrame(draw);
+        } else {
+          canvas.classList.add('hidden');
+          cancelAnimationFrame(animationFrameId);
+        }
+      }
+
+      draw();
+
+      setTimeout(() => {
+        canvas.classList.add('hidden');
+        cancelAnimationFrame(animationFrameId);
+      }, 5000);
+    }
+  </script>
+</body>
+</html>
